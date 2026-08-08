@@ -150,11 +150,30 @@ export const capabilities = [
 
 export const feedItems = [
   {
+    slug: "scroll-driven-animations",
     date: "04 JUL 2026",
     title: "CSS Scroll-Driven Animations",
     description:
       "A practical guide to scroll timelines, view timelines, and real UI demos.",
     tags: ["CSS", "Animation", "Performance"],
-    href: "/feed",
+    href: "/feed/scroll-driven-animations",
+  },
+  {
+    slug: "product-requirements-over-screens",
+    date: "18 JUN 2026",
+    title: "Product Requirements Over Screens",
+    description:
+      "Why the strongest interfaces usually start with a workflow, not a polished screen.",
+    tags: ["Product", "Interface", "Systems"],
+    href: "/feed/product-requirements-over-screens",
+  },
+  {
+    slug: "the-quiet-mobile-flow",
+    date: "29 MAY 2026",
+    title: "The Quiet Mobile Flow",
+    description:
+      "Small decisions that make a mobile experience feel calm, clear, and ready for real use.",
+    tags: ["Mobile", "UX", "Interaction"],
+    href: "/feed/the-quiet-mobile-flow",
   },
 ];

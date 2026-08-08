@@ -1,0 +1,131 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import ProximitySidebar from "@/components/shared/ProximitySidebar";
+import SiteFooter from "@/components/shared/SiteFooter";
+import { cn } from "@/utils";
+import { feedItems } from "@/utils/constants";
+import ArticleBody from "./_components/ArticleBody";
+
+type FeedArticleProps = {
+  params: Promise<{ slug: string }>;
+};
+
+function FeedNavigation({ activeSlug }: { activeSlug: string }) {
+  return (
+    <nav aria-label="Feed articles" className="space-y-4">
+      {feedItems.map((feed) => (
+        <Link
+          key={feed.slug}
+          href={feed.href}
+          className={cn(
+            "block text-sm leading-5 transition-colors hover:text-accent",
+            feed.slug === activeSlug ? "text-accent" : "text-secondary",
+          )}
+        >
+          {feed.title}
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
+async function page({ params }: FeedArticleProps) {
+  const { slug } = await params;
+  const index = feedItems.findIndex((item) => item.slug === slug);
+  if (index === -1) notFound();
+
+  const item = feedItems[index];
+  const previous = feedItems[index - 1];
+  const next = feedItems[index + 1];
+  const sections = [
+    { id: "article-start", label: item.title, kind: "title" as const },
+    { id: "the-model", label: "The model", kind: "subtitle" as const },
+    {
+      id: "scroll-timelines",
+      label: "Scroll timelines",
+      kind: "section" as const,
+    },
+    { id: "view-timelines", label: "View timelines", kind: "section" as const },
+    {
+      id: "practical-notes",
+      label: "Practical notes",
+      kind: "subtitle" as const,
+    },
+  ];
+
+  return (
+    <main className="min-h-screen px-6 pt-20">
+      <ProximitySidebar side="right" sections={sections} />
+      <div className="mb-10 2xl:hidden">
+        <details className="group border-y border-line">
+          <summary className="flex cursor-pointer list-none items-center justify-between py-4 font-mono text-[10px] uppercase tracking-[1.4px] text-label [&::-webkit-details-marker]:hidden">
+            <span>Feeds</span>
+            <span className="flex items-center gap-3">
+              <span className="text-muted">
+                {String(feedItems.length).padStart(2, "0")}
+              </span>
+              <span
+                aria-hidden="true"
+                className="text-base leading-none transition-transform group-open:rotate-45"
+              >
+                +
+              </span>
+            </span>
+          </summary>
+          <div className="pb-5">
+            <FeedNavigation activeSlug={item.slug} />
+          </div>
+        </details>
+      </div>
+
+      <aside className="fixed left-12 top-20 z-10 hidden w-[180px] 2xl:block">
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="font-mono text-[10px] uppercase tracking-[1.4px] text-label">
+            Feeds
+          </h2>
+          <span className="font-mono text-[10px] text-muted">
+            {String(feedItems.length).padStart(2, "0")}
+          </span>
+        </div>
+        <FeedNavigation activeSlug={item.slug} />
+      </aside>
+
+      <article className="container-box w-full min-w-0 text-[16px] leading-8 text-secondary">
+        <div className="content-box">
+          <ArticleBody title={item.title} description={item.description} />
+          <nav
+            aria-label="Adjacent feeds"
+            className="mt-10 grid gap-8 sm:grid-cols-2"
+          >
+            {previous ? (
+              <Link href={previous.href} className="group">
+                <span className="block font-mono text-[10px] uppercase tracking-[1.2px] text-label">
+                  Previous feed
+                </span>
+                <span className="mt-2 block text-sm text-secondary transition-colors group-hover:text-accent">
+                  {previous.title}
+                </span>
+              </Link>
+            ) : (
+              <span />
+            )}
+            {next && (
+              <Link href={next.href} className="group text-left sm:text-right">
+                <span className="block font-mono text-[10px] uppercase tracking-[1.2px] text-label">
+                  Next feed
+                </span>
+                <span className="mt-2 block text-sm text-secondary transition-colors group-hover:text-accent">
+                  {next.title}
+                </span>
+              </Link>
+            )}
+          </nav>
+
+          <SiteFooter />
+        </div>
+      </article>
+    </main>
+  );
+}
+
+export default page;

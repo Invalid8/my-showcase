@@ -15,7 +15,7 @@ async function page() {
   const source = await getPlaylist(PLAYLIST_ID, playlist);
 
   return (
-    <div className="container-box pb-10">
+    <div className="container-box">
       <div id="intro" className="space-y-10 mt-30 content-box max-w-2xl">
         <div className="space-y-1">
           <h1 className="text-xl font-bold">Daniel Fadamitan</h1>

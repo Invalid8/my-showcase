@@ -1,5 +1,6 @@
 import type React from "react";
 import ProximitySidebar from "@/components/shared/ProximitySidebar";
+import SiteFooter from "@/components/shared/SiteFooter";
 
 function layout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,6 +18,7 @@ function layout({ children }: { children: React.ReactNode }) {
         ]}
       />
       {children}
+      <SiteFooter />
     </div>
   );
 }

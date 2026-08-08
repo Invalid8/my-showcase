@@ -1,7 +1,7 @@
-import React from "react";
+import type React from "react";
 
 function layout({ children }: { children: React.ReactNode }) {
-  return <div>{children}</div>;
+  return <div className="min-h-screen">{children}</div>;
 }
 
 export default layout;
