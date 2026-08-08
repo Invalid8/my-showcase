@@ -1,22 +1,21 @@
-"use client";
-
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowUpRight } from "../../Icons";
 import type { Project } from "./types";
 
 type ProjectCardProps = {
   project: Project;
   priority?: boolean;
-  onOpen?: () => void;
 };
 
-function ProjectCard({ project, priority = false, onOpen }: ProjectCardProps) {
+function ProjectCard({ project, priority = false }: ProjectCardProps) {
   return (
-    <button
-      type="button"
-      onClick={onOpen}
-      aria-label={`Open ${project.name}`}
-      className="group relative block aspect-504/297 w-[min(504px,82vw)] overflow-hidden rounded-[3px] border border-line text-left outline-offset-4 focus-visible:outline-2 focus-visible:outline-accent"
+    <Link
+      href={project.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${project.name}, opens in a new tab`}
+      className="group relative block aspect-504/297 w-[min(504px,82vw)] overflow-hidden rounded-[3px] border border-line text-left outline-offset-4 transition-colors duration-200 hover:border-line-strong focus-visible:outline-2 focus-visible:outline-accent"
     >
       <Image
         src={project.image}
@@ -46,7 +45,7 @@ function ProjectCard({ project, priority = false, onOpen }: ProjectCardProps) {
         </span>
         <ArrowUpRight className="size-4 shrink-0 text-accent transition-transform duration-300 ease-out motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5" />
       </div>
-    </button>
+    </Link>
   );
 }
 

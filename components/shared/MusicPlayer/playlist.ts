@@ -184,7 +184,7 @@ export async function getPlaylist(
   const key = process.env.YOUTUBE_API_KEY;
 
   if (!key) {
-    console.warn("[MusicPlayer] YOUTUBE_API_KEY is not set — using fallback.");
+    console.warn("[MusicPlayer] YOUTUBE_API_KEY is not set, using fallback.");
     return fallback;
   }
 

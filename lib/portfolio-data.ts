@@ -28,6 +28,7 @@ type FeedRow = {
   date: string | null;
   tags: string[] | null;
   published: boolean | null;
+  updated_at: string | Date | null;
 };
 
 export type PortfolioFeedItem = {
@@ -39,6 +40,8 @@ export type PortfolioFeedItem = {
   tags: string[];
   href: string;
   body?: string;
+  publishedAt?: string;
+  updatedAt?: string;
 };
 
 let pool: Pool | undefined;
@@ -103,6 +106,14 @@ function tags(value: string[] | null | undefined) {
   return Array.isArray(value) ? value.filter(Boolean) : [];
 }
 
+function isoDate(value: string | Date | null | undefined) {
+  if (!value) return undefined;
+
+  const date =
+    value instanceof Date ? value : new Date(`${value.slice(0, 10)}T00:00:00Z`);
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
+}
+
 function mapProject(row: ProjectRow): Project {
   return {
     name: row.title?.trim() || "Untitled project",
@@ -121,6 +132,8 @@ function mapFeedItem(row: FeedRow): PortfolioFeedItem | null {
     id: row.id,
     slug,
     date: formatDate(row.date),
+    publishedAt: isoDate(row.date),
+    updatedAt: isoDate(row.updated_at) ?? isoDate(row.date),
     title: row.title?.trim() || "Untitled feed",
     description: row.excerpt?.trim() || "",
     tags: tags(row.tags),
@@ -149,7 +162,7 @@ const loadProjects = unstable_cache(
 const loadFeedItems = unstable_cache(
   async (): Promise<PortfolioFeedItem[]> => {
     const rows = await query<FeedRow>(`
-      SELECT id, title, slug, excerpt, body, date, tags, published
+      SELECT id, title, slug, excerpt, body, date, tags, published, updated_at
       FROM feeds
       WHERE published IS TRUE
       ORDER BY "order" ASC NULLS LAST, date DESC NULLS LAST

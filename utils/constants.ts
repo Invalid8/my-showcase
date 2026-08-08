@@ -66,24 +66,34 @@ export const projects = [
   },
 ];
 
+export const CAL_LINK = "https://cal.com/dalgoridim/30min";
+
 export const socials = [
   {
     name: "GitHub",
+    icon: "github",
+    brand: { background: "#181717", foreground: "#FFFFFF" },
     href: "https://github.com/Invalid8",
   },
   {
-    name: "LinkedIn",
-    href: "https://www.linkedin.com/in/daniel-fadamitan/",
-  },
-  {
-    name: "X (Twitter)",
+    name: "X",
+    icon: "x",
+    brand: { background: "#000000", foreground: "#FFFFFF" },
     href: "https://x.com/dalgoridim",
   },
   {
+    name: "LinkedIn",
+    icon: "linkedin",
+    brand: { background: "#0A66C2", foreground: "#FFFFFF" },
+    href: "https://www.linkedin.com/in/daniel-fadamitan/",
+  },
+  {
     name: "Resume",
+    icon: "resume",
+    brand: { background: "#1A73E8", foreground: "#FFFFFF" },
     href: "https://drive.google.com/file/d/17ESHvWc8aV7ZrPCSM_X2Map--_rlOvDk/view",
   },
-];
+] as const;
 
 export const capabilities = [
   {
@@ -95,11 +105,6 @@ export const capabilities = [
     title: "Responsive Layout",
     description:
       "Layouts that hold up from small phones to wide desktops, without a separate set of rules for every breakpoint.",
-  },
-  {
-    title: "Motion & Interaction",
-    description:
-      "Transitions, gestures and micro-interactions that clarify what changed, and stay comfortable for repeat use.",
   },
   {
     title: "Data-Driven Interfaces",
@@ -115,21 +120,6 @@ export const capabilities = [
     title: "Media & File Handling",
     description:
       "Upload, cropping, preview and export pipelines that stay responsive while the heavy work happens.",
-  },
-  {
-    title: "Realtime & Location",
-    description:
-      "Live views built on maps, sockets and streaming updates, kept readable while the underlying data keeps moving.",
-  },
-  {
-    title: "Performance",
-    description:
-      "Fast first paint and smooth interaction through careful rendering, image strategy and bundle discipline.",
-  },
-  {
-    title: "Accessibility",
-    description:
-      "Keyboard paths, focus management, semantics and contrast handled as a baseline rather than a retrofit.",
   },
 ];
 

@@ -32,6 +32,10 @@ function ProjectSpotlight({
 }: ProjectSpotlightProps) {
   const titleId = useId();
   const closeRef = useRef<HTMLButtonElement>(null);
+  const tags = project.descriptor
+    .split("·")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
 
   useEffect(() => {
     const opener = document.activeElement as HTMLElement | null;
@@ -100,59 +104,57 @@ function ProjectSpotlight({
           className="pointer-events-none absolute inset-0"
         >
           {previous && (
-            <motion.div
-              initial={{ opacity: 0, x: -42 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{
-                duration: 0.46,
-                delay: 0.1,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="pointer-events-auto absolute left-[-24px] top-1/2 z-10 hidden h-[580px] w-[260px] -translate-y-1/2 lg:block"
-            >
-              <button
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden items-center lg:flex">
+              <motion.button
                 type="button"
                 aria-label={`Show previous project: ${previous.name}`}
                 onClick={onPrevious}
-                className="group absolute left-1/2 top-1/2 h-[260px] w-[580px] -translate-x-1/2 -translate-y-1/2 rotate-[87deg] cursor-pointer overflow-hidden rounded-[20px] border border-line bg-black/30 opacity-75 transition-opacity duration-300 hover:opacity-95"
+                initial={{ opacity: 0, x: "-93%" }}
+                animate={{ opacity: 0.55, x: "-87%" }}
+                whileHover={{ opacity: 0.9, x: "-84%" }}
+                transition={{
+                  duration: 0.46,
+                  delay: 0.1,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="pointer-events-auto relative aspect-1032/629 w-[calc(80vw-3.2rem)] max-w-[825px] cursor-pointer overflow-hidden rounded-[20px] border border-line bg-[#0A0A0A]"
               >
                 <Image
                   src={previous.image}
                   alt=""
                   fill
-                  sizes="260px"
+                  sizes="(max-width: 1080px) 100vw, 1032px"
                   className="rounded-[20px] object-cover"
                 />
-              </button>
-            </motion.div>
+              </motion.button>
+            </div>
           )}
 
           {next && (
-            <motion.div
-              initial={{ opacity: 0, x: 42 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{
-                duration: 0.46,
-                delay: 0.14,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="pointer-events-auto absolute right-[-24px] top-1/2 z-10 hidden h-[580px] w-[260px] -translate-y-1/2 lg:block"
-            >
-              <button
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden items-center lg:flex">
+              <motion.button
                 type="button"
                 aria-label={`Show next project: ${next.name}`}
                 onClick={onNext}
-                className="group absolute left-1/2 top-1/2 h-[260px] w-[580px] -translate-x-1/2 -translate-y-1/2 rotate-[88deg] cursor-pointer overflow-hidden rounded-[20px] border border-line bg-black/30 opacity-75 transition-opacity duration-300 hover:opacity-95"
+                initial={{ opacity: 0, x: "93%" }}
+                animate={{ opacity: 0.55, x: "87%" }}
+                whileHover={{ opacity: 0.9, x: "84%" }}
+                transition={{
+                  duration: 0.46,
+                  delay: 0.14,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="pointer-events-auto relative aspect-1032/629 w-[calc(80vw-3.2rem)] max-w-[825px] cursor-pointer overflow-hidden rounded-[20px] border border-line bg-[#0A0A0A]"
               >
                 <Image
                   src={next.image}
                   alt=""
                   fill
-                  sizes="260px"
+                  sizes="(max-width: 1080px) 100vw, 1032px"
                   className="rounded-[20px] object-cover"
                 />
-              </button>
-            </motion.div>
+              </motion.button>
+            </div>
           )}
 
           <motion.div
@@ -166,7 +168,7 @@ function ProjectSpotlight({
             className="pointer-events-auto absolute inset-0 grid place-items-center p-4 sm:p-8"
           >
             <article
-              className="relative z-20 aspect-1032/629 w-full max-w-[1032px] overflow-hidden rounded-[20px] border border-line"
+              className="relative z-20 aspect-1032/629 w-full max-w-[1032px] overflow-hidden rounded-[20px] border border-line bg-[#0A0A0A]"
               style={{ transform: "rotate(0.477deg)" }}
             >
               <Image
@@ -202,9 +204,18 @@ function ProjectSpotlight({
                     >
                       {project.name}
                     </h2>
-                    <p className="mt-4 line-clamp-2 max-w-[580px] text-[clamp(0.8125rem,1.5vw,19px)] leading-[1.5] text-white sm:mt-6 sm:line-clamp-3">
-                      {project.description}
-                    </p>
+                    {tags.length > 0 && (
+                      <ul className="mt-4 flex flex-wrap gap-2 sm:mt-6">
+                        {tags.map((tag) => (
+                          <li
+                            key={tag}
+                            className="rounded-full border border-white/25 px-3 py-1 font-mono text-[clamp(0.5625rem,1vw,11px)] uppercase tracking-[1.2px] text-white/85"
+                          >
+                            {tag}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
 
                   <Link

@@ -7,6 +7,12 @@ import {
   getPortfolioFeedItem,
   getPortfolioFeedItems,
 } from "@/lib/portfolio-data";
+import {
+  absoluteUrl,
+  createPageMetadata,
+  siteConfig,
+  summarize,
+} from "@/lib/seo";
 import { cn } from "@/utils";
 import ArticleBody from "./_components/ArticleBody";
 
@@ -53,10 +59,15 @@ export async function generateMetadata({
   const item = await getPortfolioFeedItem(slug);
   if (!item) return {};
 
-  return {
-    title: `${item.title} — Daniel Fadamitan`,
-    description: item.description,
-  };
+  return createPageMetadata({
+    title: item.title,
+    description: summarize(item.description || item.body || item.title),
+    path: item.href,
+    type: "article",
+    publishedTime: item.publishedAt,
+    modifiedTime: item.updatedAt,
+    tags: item.tags,
+  });
 }
 
 async function page({ params }: FeedArticleProps) {
@@ -71,14 +82,67 @@ async function page({ params }: FeedArticleProps) {
   const previous = feedItems[index - 1];
   const next = feedItems[index + 1];
 
+  const author = {
+    "@type": "Person",
+    name: siteConfig.name,
+    url: siteConfig.url,
+  };
+
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        headline: item.title,
+        description: summarize(item.description || item.title),
+        url: absoluteUrl(item.href),
+        mainEntityOfPage: absoluteUrl(item.href),
+        datePublished: item.publishedAt,
+        dateModified: item.updatedAt ?? item.publishedAt,
+        keywords: item.tags.join(", "),
+        image: absoluteUrl(siteConfig.defaultOgImage),
+        author,
+        publisher: author,
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: absoluteUrl("/"),
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Feeds",
+            item: absoluteUrl("/feed"),
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: item.title,
+            item: absoluteUrl(item.href),
+          },
+        ],
+      },
+    ],
+  };
+
   return (
     <main className="min-h-screen px-6 pt-20">
+      <script
+        type="application/ld+json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: structured data must be inlined as JSON-LD
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       <ProximitySidebar
         side="right"
         container="article"
         headings="h1, h2, h3"
       />
-      <div className="mb-10 2xl:hidden">
+      <div className="mb-10 2xl:hidden max-w-[812px] mx-auto">
         <details className="group border-y border-line">
           <summary className="flex cursor-pointer list-none items-center justify-between py-4 font-mono text-[10px] uppercase tracking-[1.4px] text-label [&::-webkit-details-marker]:hidden">
             <span>Feeds</span>

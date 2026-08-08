@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import SiteFooter from "@/components/shared/SiteFooter";
 import { getPortfolioFeedItems } from "@/lib/portfolio-data";
+import { createPageMetadata } from "@/lib/seo";
 
 export const revalidate = 900;
 
-export const metadata: Metadata = {
-  title: "Feeds — Daniel Fadamitan",
+export const metadata: Metadata = createPageMetadata({
+  title: "Feeds",
   description:
     "Notes on interface engineering, CSS, motion, and the details behind the work.",
-};
+  path: "/feed",
+});
 
 async function page() {
   const feedItems = await getPortfolioFeedItems();
