@@ -5,6 +5,7 @@ import { getPlaylist } from "@/components/shared/MusicPlayer/playlist";
 import Work from "@/components/shared/Work";
 import {
   capabilities,
+  feedItems,
   PLAYLIST_ID,
   playlist,
   socials,
@@ -15,7 +16,7 @@ async function page() {
 
   return (
     <div className="container-box pb-10">
-      <div className="space-y-10 mt-30 content-box max-w-2xl">
+      <div id="intro" className="space-y-10 mt-30 content-box max-w-2xl">
         <div className="space-y-1">
           <h1 className="text-xl font-bold">Daniel Fadamitan</h1>
           <p className="text-base text-secondary">Frontend Engineer</p>
@@ -47,9 +48,11 @@ async function page() {
         </div>
       </div>
 
-      <Work />
+      <div id="work">
+        <Work />
+      </div>
 
-      <div className="content-box space-y-8">
+      <div id="approach" className="content-box space-y-8">
         <h2 className="text-sm text-secondary font-light tracking-widest uppercase">
           Approach
         </h2>
@@ -72,7 +75,7 @@ async function page() {
         </p>
       </div>
 
-      <div className="content-box space-y-8">
+      <div id="capabilities" className="content-box space-y-8">
         <div className="space-y-2">
           <h2 className="text-sm text-secondary font-light tracking-widest uppercase">
             CAPABILITIES
@@ -106,7 +109,59 @@ async function page() {
         </ul>
       </div>
 
-      <div className="content-box space-y-8">
+      <section
+        id="feed"
+        className="content-box space-y-8"
+        aria-labelledby="feed-title"
+      >
+        <div className="flex items-end justify-between gap-6">
+          <div className="space-y-2">
+            <h2
+              id="feed-title"
+              className="text-sm text-secondary font-light tracking-widest uppercase"
+            >
+              My feed
+            </h2>
+            <p className="text-secondary text-base">
+              Notes on interface engineering, CSS, motion, and the details
+              behind the work.
+            </p>
+          </div>
+          <Link
+            href="/feed"
+            className="text-secondary text-sm flex items-center gap-1.5 shrink-0 hover:text-accent transition-colors duration-200"
+          >
+            View all
+            <ArrowUpRight />
+          </Link>
+        </div>
+        <ul className="space-y-3">
+          {feedItems.map((item) => (
+            <li key={item.title}>
+              <Link
+                href={item.href}
+                className="group grid grid-cols-1 md:grid-cols-[120px_1fr_auto] gap-4 md:gap-8 rounded-xl border border-line bg-surface p-4 md:p-5 hover:border-line-strong transition-colors duration-200"
+              >
+                <time className="text-xs text-secondary tracking-wide md:pt-1">
+                  {item.date}
+                </time>
+                <div className="space-y-3">
+                  <h3 className="text-lg font-medium group-hover:text-accent transition-colors duration-200">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-secondary">{item.description}</p>
+                  <p className="text-xs text-secondary">
+                    {item.tags.join(" · ")}
+                  </p>
+                </div>
+                <ArrowUpRight className="text-secondary md:mt-1 md:justify-self-end group-hover:text-accent transition-colors duration-200" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div id="care" className="content-box space-y-8">
         <h2 className="text-sm text-secondary font-light tracking-widest uppercase">
           WHAT I CARE ABOUT
         </h2>
@@ -145,7 +200,9 @@ async function page() {
           Enough about the work. The rest of this page is fun.
         </p>
       </div>
-      <MusicPlayer source={source} />
+      <div id="music">
+        <MusicPlayer source={source} />
+      </div>
     </div>
   );
 }

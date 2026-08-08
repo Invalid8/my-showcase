@@ -147,3 +147,14 @@ export const capabilities = [
     },
   },
 ];
+
+export const feedItems = [
+  {
+    date: "04 JUL 2026",
+    title: "CSS Scroll-Driven Animations",
+    description:
+      "A practical guide to scroll timelines, view timelines, and real UI demos.",
+    tags: ["CSS", "Animation", "Performance"],
+    href: "/feed",
+  },
+];
