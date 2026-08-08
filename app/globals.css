@@ -212,3 +212,63 @@ body[data-spotlight-open] .proximity-sidebar {
     aspect-ratio: 4 / 3;
   }
 }
+
+.prose-feed [data-rehype-pretty-code-figure] {
+  margin-top: 1.75rem;
+}
+
+.prose-feed code[data-line-numbers] {
+  counter-reset: line;
+}
+
+.prose-feed [data-rehype-pretty-code-title] {
+  border: 1px solid var(--color-line);
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+  background: var(--color-surface);
+  padding: 0.5rem 1.25rem;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-label);
+}
+
+.prose-feed [data-rehype-pretty-code-title] + pre {
+  margin-top: 0;
+  border-radius: 0 0 4px 4px;
+}
+
+.prose-feed pre code {
+  display: grid;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.prose-feed pre code [data-line] {
+  padding: 0 0.25rem;
+}
+
+.prose-feed pre code [data-highlighted-line] {
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  box-shadow: inset 2px 0 0 var(--color-accent);
+}
+
+.prose-feed span[data-rehype-pretty-code-figure] span {
+  color: var(--shiki-light);
+}
+
+.prose-feed [data-rehype-pretty-code-figure] span {
+  color: var(--shiki-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .prose-feed [data-rehype-pretty-code-figure] span {
+    color: var(--shiki-dark);
+  }
+}
+
+:root[data-theme="dark"] .prose-feed [data-rehype-pretty-code-figure] span {
+  color: var(--shiki-dark);
+}

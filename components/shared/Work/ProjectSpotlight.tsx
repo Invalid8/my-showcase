@@ -195,17 +195,14 @@ function ProjectSpotlight({
                 </div>
 
                 <div className="flex items-end justify-between gap-8">
-                  <div className="max-w-[680px]">
-                    <p className="mb-3 font-mono text-[11px] uppercase tracking-[1.4px] text-accent">
-                      {project.descriptor}
-                    </p>
+                  <div className="min-w-0 max-w-[680px]">
                     <h2
                       id={titleId}
                       className="font-display text-[clamp(2rem,7vw,84px)] font-extrabold leading-[0.95] tracking-[0.04em] text-accent"
                     >
                       {project.name}
                     </h2>
-                    <p className="mt-6 max-w-[580px] text-[clamp(0.875rem,1.8vw,23px)] leading-[1.57] text-white">
+                    <p className="mt-4 line-clamp-2 max-w-[580px] text-[clamp(0.8125rem,1.5vw,19px)] leading-[1.5] text-white sm:mt-6 sm:line-clamp-3">
                       {project.description}
                     </p>
                   </div>

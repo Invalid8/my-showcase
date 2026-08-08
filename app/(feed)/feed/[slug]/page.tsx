@@ -1,19 +1,29 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProximitySidebar from "@/components/shared/ProximitySidebar";
 import SiteFooter from "@/components/shared/SiteFooter";
+import {
+  getPortfolioFeedItem,
+  getPortfolioFeedItems,
+} from "@/lib/portfolio-data";
 import { cn } from "@/utils";
-import { feedItems } from "@/utils/constants";
 import ArticleBody from "./_components/ArticleBody";
 
 type FeedArticleProps = {
   params: Promise<{ slug: string }>;
 };
 
-function FeedNavigation({ activeSlug }: { activeSlug: string }) {
+function FeedNavigation({
+  activeSlug,
+  items,
+}: {
+  activeSlug: string;
+  items: Awaited<ReturnType<typeof getPortfolioFeedItems>>;
+}) {
   return (
     <nav aria-label="Feed articles" className="space-y-4">
-      {feedItems.map((feed) => (
+      {items.map((feed) => (
         <Link
           key={feed.slug}
           href={feed.href}
@@ -29,33 +39,45 @@ function FeedNavigation({ activeSlug }: { activeSlug: string }) {
   );
 }
 
+export const revalidate = 900;
+
+export async function generateStaticParams() {
+  const items = await getPortfolioFeedItems();
+  return items.map((item) => ({ slug: item.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: FeedArticleProps): Promise<Metadata> {
+  const { slug } = await params;
+  const item = await getPortfolioFeedItem(slug);
+  if (!item) return {};
+
+  return {
+    title: `${item.title} — Daniel Fadamitan`,
+    description: item.description,
+  };
+}
+
 async function page({ params }: FeedArticleProps) {
   const { slug } = await params;
-  const index = feedItems.findIndex((item) => item.slug === slug);
-  if (index === -1) notFound();
+  const [item, feedItems] = await Promise.all([
+    getPortfolioFeedItem(slug),
+    getPortfolioFeedItems(),
+  ]);
+  if (!item) notFound();
 
-  const item = feedItems[index];
+  const index = feedItems.findIndex((feed) => feed.slug === slug);
   const previous = feedItems[index - 1];
   const next = feedItems[index + 1];
-  const sections = [
-    { id: "article-start", label: item.title, kind: "title" as const },
-    { id: "the-model", label: "The model", kind: "subtitle" as const },
-    {
-      id: "scroll-timelines",
-      label: "Scroll timelines",
-      kind: "section" as const,
-    },
-    { id: "view-timelines", label: "View timelines", kind: "section" as const },
-    {
-      id: "practical-notes",
-      label: "Practical notes",
-      kind: "subtitle" as const,
-    },
-  ];
 
   return (
     <main className="min-h-screen px-6 pt-20">
-      <ProximitySidebar side="right" sections={sections} />
+      <ProximitySidebar
+        side="right"
+        container="article"
+        headings="h1, h2, h3"
+      />
       <div className="mb-10 2xl:hidden">
         <details className="group border-y border-line">
           <summary className="flex cursor-pointer list-none items-center justify-between py-4 font-mono text-[10px] uppercase tracking-[1.4px] text-label [&::-webkit-details-marker]:hidden">
@@ -73,7 +95,7 @@ async function page({ params }: FeedArticleProps) {
             </span>
           </summary>
           <div className="pb-5">
-            <FeedNavigation activeSlug={item.slug} />
+            <FeedNavigation activeSlug={item.slug} items={feedItems} />
           </div>
         </details>
       </div>
@@ -87,12 +109,18 @@ async function page({ params }: FeedArticleProps) {
             {String(feedItems.length).padStart(2, "0")}
           </span>
         </div>
-        <FeedNavigation activeSlug={item.slug} />
+        <FeedNavigation activeSlug={item.slug} items={feedItems} />
       </aside>
 
       <article className="container-box w-full min-w-0 text-[16px] leading-8 text-secondary">
         <div className="content-box">
-          <ArticleBody title={item.title} description={item.description} />
+          <ArticleBody
+            title={item.title}
+            description={item.description}
+            date={item.date}
+            tags={item.tags}
+            body={item.body}
+          />
           <nav
             aria-label="Adjacent feeds"
             className="mt-10 grid gap-8 sm:grid-cols-2"

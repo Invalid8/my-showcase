@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import ThemeToggle from "./ThemeToggle";
 import { cn } from "@/utils";
+import ThemeToggle from "./ThemeToggle";
 
 function SiteFooter({ className }: { className?: string }) {
   return (

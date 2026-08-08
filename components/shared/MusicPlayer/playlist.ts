@@ -20,7 +20,16 @@ type PlaylistItem = {
 
 type VideoItem = {
   id?: string;
-  contentDetails?: { duration?: string };
+  contentDetails?: {
+    duration?: string;
+    regionRestriction?: { blocked?: string[] };
+  };
+  status?: { embeddable?: boolean; privacyStatus?: string };
+};
+
+type VideoDetail = {
+  duration?: number;
+  embeddable: boolean;
 };
 
 function parseDuration(iso: string | undefined): number | undefined {
@@ -139,21 +148,28 @@ async function enrich(track: Track): Promise<Partial<Track>> {
   };
 }
 
-async function durations(ids: string[], key: string) {
-  const map = new Map<string, number>();
+async function videoDetails(ids: string[], key: string) {
+  const map = new Map<string, VideoDetail>();
 
   for (let start = 0; start < ids.length; start += 50) {
     const batch = ids.slice(start, start + 50);
     const response = await fetch(
-      `${API}/videos?part=contentDetails&id=${batch.join(",")}&key=${key}`,
+      `${API}/videos?part=contentDetails,status&id=${batch.join(",")}&key=${key}`,
       { next: { revalidate: REVALIDATE } },
     );
     if (!response.ok) continue;
 
     const body: { items?: VideoItem[] } = await response.json();
     for (const item of body.items ?? []) {
-      const seconds = parseDuration(item.contentDetails?.duration);
-      if (item.id && seconds) map.set(item.id, seconds);
+      if (!item.id) continue;
+
+      map.set(item.id, {
+        duration: parseDuration(item.contentDetails?.duration),
+        embeddable:
+          item.status?.embeddable !== false &&
+          item.status?.privacyStatus !== "private" &&
+          !item.contentDetails?.regionRestriction?.blocked?.length,
+      });
     }
   }
 
@@ -173,10 +189,11 @@ export async function getPlaylist(
   }
 
   try {
+    const candidateLimit = limit * 2;
     const tracks: Track[] = [];
     let pageToken = "";
 
-    while (tracks.length < limit) {
+    while (tracks.length < candidateLimit) {
       const url = new URL(`${API}/playlistItems`);
       url.searchParams.set("part", "snippet");
       url.searchParams.set("playlistId", playlistId);
@@ -212,7 +229,7 @@ export async function getPlaylist(
           artwork: pickThumbnail(item.snippet?.thumbnails, videoId),
         });
 
-        if (tracks.length >= limit) break;
+        if (tracks.length >= candidateLimit) break;
       }
 
       pageToken = body.nextPageToken ?? "";
@@ -221,21 +238,27 @@ export async function getPlaylist(
 
     if (!tracks.length) return fallback;
 
-    const lengths = await durations(
+    const details = await videoDetails(
       tracks.map((track) => track.id as string),
       key,
     );
 
-    const extras = await mapLimit(tracks, 4, (track) =>
+    const playable = tracks
+      .filter((track) => details.get(track.id as string)?.embeddable !== false)
+      .slice(0, limit);
+
+    if (!playable.length) return fallback;
+
+    const extras = await mapLimit(playable, 4, (track) =>
       enrich(track).catch(() => ({})),
     );
 
     return {
       name: fallback.name,
-      tracks: tracks.map((track, index) => ({
+      tracks: playable.map((track, index) => ({
         ...track,
         ...extras[index],
-        duration: lengths.get(track.id as string),
+        duration: details.get(track.id as string)?.duration,
       })),
     };
   } catch (error) {

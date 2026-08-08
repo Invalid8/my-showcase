@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { playlist } from "@/utils/constants";
 import Disc from "./Disc";
 import NowPlayingCard from "./NowPlayingCard";
@@ -32,7 +32,11 @@ const getFloatingPosition = (section: HTMLElement): FloatingPosition => {
 };
 
 function MusicPlayer({ source = playlist }: MusicPlayerProps) {
-  const tracks = source.tracks;
+  const [unplayable, setUnplayable] = useState<string[]>([]);
+  const tracks = useMemo(
+    () => source.tracks.filter((track) => !unplayable.includes(trackId(track))),
+    [source.tracks, unplayable],
+  );
   const [index, setIndex] = useState<number | null>(null);
   const [volume, setVolume] = useState(80);
   const [floatingPosition, setFloatingPosition] = useState<
@@ -55,6 +59,18 @@ function MusicPlayer({ source = playlist }: MusicPlayerProps) {
 
   const onEnded = useCallback(() => step(1), [step]);
 
+  const onUnplayable = useCallback((id: string) => {
+    setUnplayable((current) =>
+      current.includes(id) ? current : [...current, id],
+    );
+  }, []);
+
+  useEffect(() => {
+    if (index === null) return;
+    if (!tracks.length) setIndex(null);
+    else if (index >= tracks.length) setIndex(0);
+  }, [index, tracks.length]);
+
   const {
     containerRef,
     isPlaying,
@@ -67,6 +83,7 @@ function MusicPlayer({ source = playlist }: MusicPlayerProps) {
   } = useYouTubePlayer({
     videoId: current ? trackId(current) : "",
     onEnded,
+    onUnplayable,
     volume,
   });
 
@@ -174,10 +191,9 @@ function MusicPlayer({ source = playlist }: MusicPlayerProps) {
         </div>
 
         {failed && (
-          <p className="pt-4 text-[13px] text-warm">
-            This track can&rsquo;t be played here. Open it on YouTube Music
-            instead.
-          </p>
+          <output className="block pt-4 text-[13px] text-warm">
+            The player is having a moment. Try again shortly.
+          </output>
         )}
       </div>
 

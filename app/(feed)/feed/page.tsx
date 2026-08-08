@@ -1,15 +1,31 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { feedItems } from "@/utils/constants";
 import SiteFooter from "@/components/shared/SiteFooter";
+import { getPortfolioFeedItems } from "@/lib/portfolio-data";
 
-function page() {
+export const revalidate = 900;
+
+export const metadata: Metadata = {
+  title: "Feeds — Daniel Fadamitan",
+  description:
+    "Notes on interface engineering, CSS, motion, and the details behind the work.",
+};
+
+async function page() {
+  const feedItems = await getPortfolioFeedItems();
+
   return (
     <div>
       <main className="container-box min-h-[80svh]">
         <div className="px-6 pt-20">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[1.4px] text-label">
-              Daniel Fadamitan
+              <span>
+                <Link href={"/"} className="hover:text-accent">
+                  Home
+                </Link>
+              </span>{" "}
+              - Daniel Fadamitan
             </p>
             <h1 className="mt-5 font-display text-5xl font-semibold tracking-[-0.05em]">
               Feeds

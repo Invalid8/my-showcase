@@ -25,7 +25,7 @@ type YTNamespace = {
       events?: {
         onReady?: () => void;
         onStateChange?: (event: { data: number }) => void;
-        onError?: () => void;
+        onError?: (event: { data: number }) => void;
       };
     },
   ) => YTPlayer;
@@ -39,6 +39,8 @@ declare global {
 }
 
 const PLAYER_STATE = { ENDED: 0, PLAYING: 1, PAUSED: 2, BUFFERING: 3 } as const;
+
+const UNPLAYABLE_ERRORS = new Set([5, 100, 101, 150]);
 
 export const PLAYER_SIZE = 240;
 
@@ -79,13 +81,21 @@ function loadYouTubeApi(): Promise<YTNamespace> {
 type Options = {
   videoId: string;
   onEnded?: () => void;
+  onUnplayable?: (videoId: string) => void;
   volume?: number;
 };
 
-export function useYouTubePlayer({ videoId, onEnded, volume = 80 }: Options) {
+export function useYouTubePlayer({
+  videoId,
+  onEnded,
+  onUnplayable,
+  volume = 80,
+}: Options) {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
   const onEndedRef = useRef(onEnded);
+  const onUnplayableRef = useRef(onUnplayable);
+  const videoIdRef = useRef(videoId);
   const shouldAutoplayRef = useRef(false);
 
   const [isReady, setIsReady] = useState(false);
@@ -97,7 +107,9 @@ export function useYouTubePlayer({ videoId, onEnded, volume = 80 }: Options) {
 
   useEffect(() => {
     onEndedRef.current = onEnded;
-  }, [onEnded]);
+    onUnplayableRef.current = onUnplayable;
+    videoIdRef.current = videoId;
+  }, [onEnded, onUnplayable, videoId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -139,10 +151,18 @@ export function useYouTubePlayer({ videoId, onEnded, volume = 80 }: Options) {
                 onEndedRef.current?.();
               }
             },
-            onError: () => {
+            onError: ({ data }) => {
               if (cancelled) return;
-              setFailed(true);
+
               setIsPlaying(false);
+              setIsBuffering(false);
+
+              if (UNPLAYABLE_ERRORS.has(data)) {
+                onUnplayableRef.current?.(videoIdRef.current);
+                return;
+              }
+
+              setFailed(true);
             },
           },
         });

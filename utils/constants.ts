@@ -87,64 +87,49 @@ export const socials = [
 
 export const capabilities = [
   {
-    title: "Image Cropper",
+    title: "Interface Systems",
     description:
-      "A responsive image cropper with drag selection, preview, and export support.",
-    product: {
-      name: "Fillyr",
-      link: "https://fillyr.com",
-      component: "Image Cropper",
-    },
+      "Design systems and component libraries a team can build on, with consistent tokens, states and accessible primitives.",
   },
   {
-    title: "Bulk Generation",
+    title: "Responsive Layout",
     description:
-      "A workflow for generating multiple assets, content pieces, or data sets at once.",
-    product: {
-      name: "Bulkmailer",
-      link: "https://bulkmailer.dev",
-      component: "Bulk Generation",
-    },
+      "Layouts that hold up from small phones to wide desktops, without a separate set of rules for every breakpoint.",
   },
   {
-    title: "Mobile Authentication",
+    title: "Motion & Interaction",
     description:
-      "A mobile-first authentication flow with OTP, biometric support, and secure session handling.",
-    product: {
-      name: "Waysdrop",
-      link: "https://waysdrop.com",
-      component: "Mobile Authentication",
-    },
+      "Transitions, gestures and micro-interactions that clarify what changed, and stay comfortable for repeat use.",
   },
   {
-    title: "Publishing Workspace",
+    title: "Data-Driven Interfaces",
     description:
-      "A collaborative workspace for publishing content, scheduling, and review.",
-    product: {
-      name: "CBI News",
-      link: "https://cbinews.tv",
-      component: "Publishing Workspace",
-    },
+      "Wiring interfaces to real APIs with loading, empty and error states treated as part of the design, not an afterthought.",
   },
   {
-    title: "News Reading Experience",
+    title: "Auth & Secure Flows",
     description:
-      "An immersive news reader with curated feeds, categories, and offline access.",
-    product: {
-      name: "CBI News",
-      link: "https://cbinews.tv",
-      component: "News Reading Experience",
-    },
+      "Sign-in, verification and session handling across web and mobile, including OTP, biometrics and protected routes.",
   },
   {
-    title: "Live Location Interface",
+    title: "Media & File Handling",
     description:
-      "Real-time location tracking UI with maps, routes, and status updates.",
-    product: {
-      name: "IRunner",
-      link: "https://play.google.com/store/apps/details?id=com.instarunners",
-      component: "Live Location Interface",
-    },
+      "Upload, cropping, preview and export pipelines that stay responsive while the heavy work happens.",
+  },
+  {
+    title: "Realtime & Location",
+    description:
+      "Live views built on maps, sockets and streaming updates, kept readable while the underlying data keeps moving.",
+  },
+  {
+    title: "Performance",
+    description:
+      "Fast first paint and smooth interaction through careful rendering, image strategy and bundle discipline.",
+  },
+  {
+    title: "Accessibility",
+    description:
+      "Keyboard paths, focus management, semantics and contrast handled as a baseline rather than a retrofit.",
   },
 ];
 

@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useRef, ReactNode, useEffect } from "react";
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 
 type ScrollContextType = {
   scrollX: { current: number };

@@ -4,15 +4,24 @@ import MusicPlayer from "@/components/shared/MusicPlayer";
 import { getPlaylist } from "@/components/shared/MusicPlayer/playlist";
 import Work from "@/components/shared/Work";
 import {
+  getPortfolioFeedItems,
+  getPortfolioProjects,
+} from "@/lib/portfolio-data";
+import {
   capabilities,
-  feedItems,
   PLAYLIST_ID,
   playlist,
   socials,
 } from "@/utils/constants";
 
+export const revalidate = 900;
+
 async function page() {
-  const source = await getPlaylist(PLAYLIST_ID, playlist);
+  const [source, projects, feedItems] = await Promise.all([
+    getPlaylist(PLAYLIST_ID, playlist),
+    getPortfolioProjects(),
+    getPortfolioFeedItems(),
+  ]);
 
   return (
     <div className="container-box">
@@ -49,7 +58,7 @@ async function page() {
       </div>
 
       <div id="work">
-        <Work />
+        <Work projects={projects} />
       </div>
 
       <div id="approach" className="content-box space-y-8">
@@ -87,22 +96,11 @@ async function page() {
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {capabilities.map((capability) => (
             <li key={capability.title} className="h-full">
-              <div className="bg-surface p-6 rounded h-full hover:bg-opacity-80 transition-colors duration-200 flex flex-col justify-between border border-line hover:border-line-strong">
-                <h3 className="text-base font-semibold mb-2 flex items-center gap-1.5">
-                  {capability.title}
-                </h3>
+              <div className="bg-surface p-6 rounded h-full transition-colors duration-200 flex flex-col gap-2 border border-line hover:border-line-strong">
+                <h3 className="text-base font-semibold">{capability.title}</h3>
                 <p className="text-secondary text-sm">
                   {capability.description}
                 </p>
-                <Link
-                  href={capability.product.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-secondary text-sm flex items-center gap-1.5 mt-4 hover:text-accent transition-colors duration-200"
-                >
-                  {capability.product.name}
-                  <ArrowUpRight />
-                </Link>
               </div>
             </li>
           ))}
@@ -136,8 +134,8 @@ async function page() {
           </Link>
         </div>
         <ul className="space-y-3">
-          {feedItems.map((item) => (
-            <li key={item.title}>
+          {feedItems.slice(0, 3).map((item) => (
+            <li key={item.slug}>
               <Link
                 href={item.href}
                 className="group grid grid-cols-1 md:grid-cols-[120px_1fr_auto] gap-4 md:gap-8 rounded-xl border border-line bg-surface p-4 md:p-5 hover:border-line-strong transition-colors duration-200"

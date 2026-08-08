@@ -1,26 +1,47 @@
-function ArticleBody({
+import { renderMarkdown } from "@/lib/markdown";
+
+async function ArticleBody({
   title,
   description,
+  date,
+  tags,
+  body,
 }: {
   title: string;
   description: string;
+  date: string;
+  tags: string[];
+  body?: string;
 }) {
   return (
     <>
       <section id="article-start" className="scroll-mt-10">
         <div className="mb-6 flex items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[1.2px] text-label">
-          <span>04 JUL 2026</span>
-          <span>CSS · Animation · Performance</span>
+          <span>{date}</span>
+          <span>{tags.join(" · ")}</span>
         </div>
         <h1 className="max-w-3xl font-display text-4xl font-semibold leading-[1.05] tracking-[-0.045em] text-primary sm:text-6xl">
           {title}
         </h1>
         <p className="mt-7 max-w-2xl text-lg leading-8 text-secondary">
-          {description} The useful part is not the novelty of the idea, but the
-          way it changes how the interface is shaped.
+          {description}
         </p>
       </section>
 
+      {body ? (
+        <section id="article-content" className="prose-feed scroll-mt-10 mt-10">
+          {await renderMarkdown(body)}
+        </section>
+      ) : (
+        <FallbackArticle />
+      )}
+    </>
+  );
+}
+
+function FallbackArticle() {
+  return (
+    <>
       <section id="the-model" className="scroll-mt-10 mt-10">
         <p className="mb-4 font-mono text-[10px] uppercase tracking-[1.4px] text-accent">
           01 / The model

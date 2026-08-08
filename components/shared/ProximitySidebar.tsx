@@ -20,13 +20,76 @@ export type ProximitySection = {
 };
 
 type ProximitySidebarProps = {
-  sections: ProximitySection[];
+  sections?: ProximitySection[];
   side?: Side;
+  container?: string;
+  headings?: string;
 };
 
 const RADIUS = 40;
 const MAX_DASH_WIDTH = 110;
 const SCROLL_PULSE_RESET_DELAY = 80;
+
+const kindByTag: Record<string, SectionKind> = {
+  h1: "title",
+  h2: "subtitle",
+  h3: "section",
+  h4: "body",
+  h5: "body",
+  h6: "body",
+};
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "section";
+
+const readHeadings = (
+  container: string,
+  headings: string,
+): ProximitySection[] => {
+  const root = document.querySelector(container);
+  if (!root) return [];
+
+  const taken = new Set<string>();
+
+  return Array.from(root.querySelectorAll<HTMLElement>(headings))
+    .filter(
+      (node) =>
+        !node.closest(".proximity-sidebar") && !!node.textContent?.trim(),
+    )
+    .map((node) => {
+      const label = (node.textContent ?? "").trim();
+      let id = node.id;
+
+      if (!id) {
+        const base = slugify(label);
+        id = base;
+        let suffix = 2;
+        while (taken.has(id) || document.getElementById(id)) {
+          id = `${base}-${suffix++}`;
+        }
+        node.id = id;
+      }
+
+      taken.add(id);
+      if (!node.style.scrollMarginTop) node.style.scrollMarginTop = "6rem";
+
+      return {
+        id,
+        label,
+        kind: kindByTag[node.tagName.toLowerCase()] ?? "body",
+      };
+    });
+};
+
+const sameSections = (a: ProximitySection[], b: ProximitySection[]) =>
+  a.length === b.length &&
+  a.every(
+    (item, index) => item.id === b[index].id && item.kind === b[index].kind,
+  );
 
 const dashPresets: Record<
   SectionKind,
@@ -122,14 +185,50 @@ function Dash({
   );
 }
 
-function ProximitySidebar({ sections, side = "left" }: ProximitySidebarProps) {
+function ProximitySidebar({
+  sections,
+  side = "left",
+  container = "main",
+  headings = "h1, h2, h3",
+}: ProximitySidebarProps) {
   const mouseY = useMotionValue(Number.POSITIVE_INFINITY);
   const shouldReduceMotion = useReducedMotion();
   const dashRefs = useRef(new Map<string, HTMLButtonElement>());
   const pointerInside = useRef(false);
-  const [activeId, setActiveId] = useState(sections[0]?.id);
+  const [detected, setDetected] = useState<ProximitySection[]>([]);
+  const resolved = sections ?? detected;
+  const [activeId, setActiveId] = useState(sections?.[0]?.id);
   const [inside, setInside] = useState(false);
   const resetTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (sections) return;
+
+    const root = document.querySelector(container);
+    if (!root) return;
+
+    let frame = 0;
+    const sync = () => {
+      const next = readHeadings(container, headings);
+      setDetected((current) => (sameSections(current, next) ? current : next));
+    };
+    const schedule = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        sync();
+      });
+    };
+
+    sync();
+    const observer = new MutationObserver(schedule);
+    observer.observe(root, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [sections, container, headings]);
 
   const registerDash = useCallback(
     (id: string, node: HTMLButtonElement | null) => {
@@ -179,10 +278,10 @@ function ProximitySidebar({ sections, side = "left" }: ProximitySidebarProps) {
   useEffect(() => {
     const updateActiveSection = () => {
       const anchorY = window.innerHeight * 0.4;
-      let nextId = sections[0]?.id;
+      let nextId = resolved[0]?.id;
       let shortestDistance = Number.POSITIVE_INFINITY;
 
-      for (const section of sections) {
+      for (const section of resolved) {
         const element = document.getElementById(section.id);
         if (!element) continue;
         const rect = element.getBoundingClientRect();
@@ -220,7 +319,9 @@ function ProximitySidebar({ sections, side = "left" }: ProximitySidebarProps) {
       window.removeEventListener("scroll", scheduleUpdate);
       window.removeEventListener("resize", scheduleUpdate);
     };
-  }, [inside, pulseSection, sections]);
+  }, [inside, pulseSection, resolved]);
+
+  if (!resolved.length) return null;
 
   return (
     <nav
@@ -244,7 +345,7 @@ function ProximitySidebar({ sections, side = "left" }: ProximitySidebarProps) {
           mouseY.set(Number.POSITIVE_INFINITY);
         }}
       >
-        {sections.flatMap((section) => {
+        {resolved.flatMap((section) => {
           const sectionKind = getSectionKind(section);
 
           return Array.from({ length: 5 }, (_, index) => (
