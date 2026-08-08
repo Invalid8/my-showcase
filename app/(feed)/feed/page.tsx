@@ -37,12 +37,12 @@ async function page() {
               <Link
                 key={item.slug}
                 href={item.href}
-                className="group grid gap-5 py-7 sm:grid-cols-[120px_1fr_auto] sm:gap-8"
+                className="group grid gap-5 py-7 sm:grid-cols-[1fr_auto] sm:gap-8"
               >
-                <time className="font-mono text-[10px] uppercase tracking-[1.1px] text-label">
-                  {item.date}
-                </time>
                 <span>
+                  <time className="font-mono text-[10px] uppercase tracking-[1.1px] text-label">
+                    {item.date}
+                  </time>
                   <span className="block text-xl font-medium text-primary transition-colors group-hover:text-accent">
                     {item.title}
                   </span>

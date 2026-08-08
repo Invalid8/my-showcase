@@ -8,7 +8,7 @@ function SiteFooter({ className }: { className?: string }) {
   return (
     <footer
       className={cn(
-        "mx-auto mt-20 w-full max-w-[812px] border-t border-line px-4 py-7 sm:px-0",
+        "mx-auto mt-20 w-full max-w-[812px] px-4 py-7 sm:px-0",
         className,
       )}
     >

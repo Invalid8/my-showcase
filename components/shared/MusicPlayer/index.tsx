@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { playlist } from "@/utils/constants";
 import Disc from "./Disc";
 import NowPlayingCard from "./NowPlayingCard";
+import NowPlayingModal from "./NowPlayingModal";
 import Turnable from "./Turnable";
 import type { Playlist } from "./types";
 import { PLAYER_SIZE, useYouTubePlayer } from "./useYouTubePlayer";
@@ -17,6 +18,8 @@ type FloatingPosition = {
   left: number;
   top: number;
 };
+
+const DESKTOP = "(min-width: 1024px)";
 
 const getFloatingPosition = (section: HTMLElement): FloatingPosition => {
   const sectionRect = section.getBoundingClientRect();
@@ -42,6 +45,7 @@ function MusicPlayer({ source = playlist }: MusicPlayerProps) {
   const [floatingPosition, setFloatingPosition] = useState<
     FloatingPosition | undefined
   >();
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const dragOffset = useRef<{ x: number; y: number } | undefined>(undefined);
   const current = index === null ? undefined : tracks[index];
@@ -95,6 +99,9 @@ function MusicPlayer({ source = playlist }: MusicPlayerProps) {
       }
       keepPlaying(true);
       setIndex(next);
+
+      if (!window.matchMedia(DESKTOP).matches) return;
+
       setFloatingPosition(
         (position) =>
           position ??
@@ -105,6 +112,16 @@ function MusicPlayer({ source = playlist }: MusicPlayerProps) {
     },
     [index, keepPlaying, toggle],
   );
+
+  useEffect(() => {
+    const query = window.matchMedia(DESKTOP);
+    const sync = () => {
+      if (query.matches) setDetailsOpen(false);
+    };
+
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
 
   const handleCardPointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
@@ -168,10 +185,11 @@ function MusicPlayer({ source = playlist }: MusicPlayerProps) {
             volume={volume}
             onToggle={toggle}
             onVolumeChange={setVolume}
+            onShowDetails={() => setDetailsOpen(true)}
           />
           {current && floatingPosition && (
             <div
-              className="absolute z-50 w-[min(300px,calc(100vw-32px))] cursor-grab touch-none active:cursor-grabbing"
+              className="absolute z-50 hidden w-[min(300px,calc(100vw-32px))] cursor-grab touch-none active:cursor-grabbing lg:block"
               style={floatingPosition}
               onPointerDown={handleCardPointerDown}
               onPointerMove={handleCardPointerMove}
@@ -224,6 +242,16 @@ function MusicPlayer({ source = playlist }: MusicPlayerProps) {
           })}
         </ul>
       </div>
+
+      <NowPlayingModal
+        open={detailsOpen && !!current}
+        onClose={() => setDetailsOpen(false)}
+        track={current}
+        isPlaying={isPlaying}
+        isBuffering={isBuffering}
+        progress={progress}
+        duration={duration}
+      />
 
       <div
         ref={containerRef}

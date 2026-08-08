@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight } from "../../Icons";
+import { ArrowUpRight, Info } from "../../Icons";
 import Disc from "./Disc";
 import type { Track } from "./types";
 import { formatTime, trackArtwork } from "./utils";
@@ -23,6 +23,7 @@ export type TurnableProps = {
   disabled?: boolean;
   onToggle?: () => void;
   onVolumeChange?: (volume: number) => void;
+  onShowDetails?: () => void;
   className?: string;
 };
 
@@ -36,6 +37,7 @@ function Turnable({
   disabled = false,
   onToggle,
   onVolumeChange,
+  onShowDetails,
   className = "",
 }: TurnableProps) {
   const total = duration || track?.duration || 0;
@@ -243,6 +245,18 @@ function Turnable({
             <span className="truncate text-[15px] font-semibold tracking-[-0.2px] text-primary">
               {track?.title ?? "Nothing queued"}
             </span>
+
+            {track && onShowDetails && (
+              <button
+                type="button"
+                onClick={onShowDetails}
+                aria-label={`Track details for ${track.title}`}
+                className="grid size-5 shrink-0 place-items-center rounded-full border border-line text-secondary outline-offset-4 transition-colors duration-200 hover:border-line-strong hover:text-accent focus-visible:outline-2 focus-visible:outline-accent lg:hidden"
+              >
+                <Info className="size-3" />
+              </button>
+            )}
+
             <span className="h-px w-2.5 shrink-0 bg-line-strong" />
             <span className="truncate text-[13px] text-secondary">
               {track?.artist ?? "Choose a record below"}
