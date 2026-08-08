@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { playlist } from "@/utils/constants";
 import Disc from "./Disc";
 import NowPlayingCard from "./NowPlayingCard";
@@ -13,10 +13,33 @@ type MusicPlayerProps = {
   source?: Playlist;
 };
 
+type FloatingPosition = {
+  left: number;
+  top: number;
+};
+
+const getFloatingPosition = (section: HTMLElement): FloatingPosition => {
+  const sectionRect = section.getBoundingClientRect();
+  const cardWidth = Math.min(300, window.innerWidth - 32);
+  const viewportLeft =
+    Math.random() > 0.5 ? 24 : window.innerWidth - cardWidth - 24;
+  const top = Math.max(
+    24,
+    Math.round(window.innerHeight * (0.14 + Math.random() * 0.42)),
+  );
+
+  return { left: viewportLeft - sectionRect.left, top: top - sectionRect.top };
+};
+
 function MusicPlayer({ source = playlist }: MusicPlayerProps) {
   const tracks = source.tracks;
   const [index, setIndex] = useState<number | null>(null);
   const [volume, setVolume] = useState(80);
+  const [floatingPosition, setFloatingPosition] = useState<
+    FloatingPosition | undefined
+  >();
+  const sectionRef = useRef<HTMLElement>(null);
+  const dragOffset = useRef<{ x: number; y: number } | undefined>(undefined);
   const current = index === null ? undefined : tracks[index];
 
   const step = useCallback(
@@ -55,21 +78,70 @@ function MusicPlayer({ source = playlist }: MusicPlayerProps) {
       }
       keepPlaying(true);
       setIndex(next);
+      setFloatingPosition(
+        (position) =>
+          position ??
+          (sectionRef.current
+            ? getFloatingPosition(sectionRef.current)
+            : undefined),
+      );
     },
     [index, keepPlaying, toggle],
   );
 
+  const handleCardPointerDown = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if ((event.target as HTMLElement).closest("a, button, input")) return;
+
+      const rect = event.currentTarget.getBoundingClientRect();
+      dragOffset.current = {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      };
+      event.currentTarget.setPointerCapture(event.pointerId);
+    },
+    [],
+  );
+
+  const handleCardPointerMove = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (!dragOffset.current) return;
+      const section = sectionRef.current;
+      if (!section) return;
+      const sectionRect = section.getBoundingClientRect();
+
+      setFloatingPosition({
+        left: Math.max(
+          16 - sectionRect.left,
+          Math.min(
+            window.innerWidth -
+              event.currentTarget.offsetWidth -
+              16 -
+              sectionRect.left,
+            event.clientX - sectionRect.left - dragOffset.current.x,
+          ),
+        ),
+        top: event.clientY - sectionRect.top - dragOffset.current.y,
+      });
+    },
+    [],
+  );
+
+  const handleCardPointerUp = useCallback(() => {
+    dragOffset.current = undefined;
+  }, []);
+
   return (
-    <section suppressHydrationWarning>
+    <section ref={sectionRef} suppressHydrationWarning className="relative">
       <div className="content-box">
-        <h2 className="font-mono text-[11px] uppercase tracking-[1.4px] text-label">
+        <h2 className="font-mono text-sm uppercase tracking-[1.4px] text-label">
           Currently listening
         </h2>
         <p className="max-w-176.5 pt-4 text-[15.5px]/[25px] text-secondary">
           Usually somewhere in the background while I&rsquo;m working.
         </p>
 
-        <div className="relative flex flex-col items-stretch gap-6 pt-12">
+        <div className="flex flex-col items-stretch gap-6 pt-12">
           <Turnable
             track={current}
             isPlaying={isPlaying}
@@ -80,14 +152,25 @@ function MusicPlayer({ source = playlist }: MusicPlayerProps) {
             onToggle={toggle}
             onVolumeChange={setVolume}
           />
-          <NowPlayingCard
-            className="min-[1440px]:absolute min-[1440px]:left-full min-[1440px]:top-12 min-[1440px]:ml-6 min-[1440px]:h-(--deck-height) min-[1440px]:w-66"
-            track={current}
-            isPlaying={isPlaying}
-            isBuffering={isBuffering}
-            progress={progress}
-            duration={duration}
-          />
+          {current && floatingPosition && (
+            <div
+              className="absolute z-50 w-[min(300px,calc(100vw-32px))] cursor-grab touch-none active:cursor-grabbing"
+              style={floatingPosition}
+              onPointerDown={handleCardPointerDown}
+              onPointerMove={handleCardPointerMove}
+              onPointerUp={handleCardPointerUp}
+              onPointerCancel={handleCardPointerUp}
+            >
+              <NowPlayingCard
+                className="h-[min(72vh,454px)] w-full shadow-2xl"
+                track={current}
+                isPlaying={isPlaying}
+                isBuffering={isBuffering}
+                progress={progress}
+                duration={duration}
+              />
+            </div>
+          )}
         </div>
 
         {failed && (

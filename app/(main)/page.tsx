@@ -87,7 +87,7 @@ async function page() {
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {capabilities.map((capability) => (
             <li key={capability.title} className="h-full">
-              <div className="bg-surface p-6 rounded h-full hover:bg-opacity-80 transition-colors duration-200 flex flex-col justify-between">
+              <div className="bg-surface p-6 rounded h-full hover:bg-opacity-80 transition-colors duration-200 flex flex-col justify-between border border-line hover:border-line-strong">
                 <h3 className="text-base font-semibold mb-2 flex items-center gap-1.5">
                   {capability.title}
                 </h3>

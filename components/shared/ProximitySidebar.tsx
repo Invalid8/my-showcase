@@ -225,7 +225,7 @@ function ProximitySidebar({ sections, side = "left" }: ProximitySidebarProps) {
   return (
     <nav
       aria-label="Page sections"
-      className={`pointer-events-none fixed inset-y-0 z-40 hidden h-screen items-center lg:flex ${
+      className={`proximity-sidebar pointer-events-none fixed inset-y-0 z-40 hidden h-screen items-center lg:flex ${
         side === "left" ? "left-0 justify-start" : "right-0 justify-end"
       }`}
     >

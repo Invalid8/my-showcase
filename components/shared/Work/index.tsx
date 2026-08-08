@@ -12,9 +12,11 @@ type WorkProps = {
 
 function Work({ projects = defaultProjects }: WorkProps) {
   const [open, setOpen] = useState<number | null>(null);
+  const [direction, setDirection] = useState<1 | -1>(1);
 
   const step = useCallback(
     (delta: number) => {
+      setDirection(delta > 0 ? 1 : -1);
       setOpen((current) =>
         current === null
           ? current
@@ -51,6 +53,8 @@ function Work({ projects = defaultProjects }: WorkProps) {
       {open !== null && projects[open] && (
         <ProjectSpotlight
           project={projects[open]}
+          projectIndex={open}
+          projectCount={projects.length}
           previous={
             projects.length > 1
               ? projects[(open - 1 + projects.length) % projects.length]
@@ -62,6 +66,7 @@ function Work({ projects = defaultProjects }: WorkProps) {
               : undefined
           }
           onClose={close}
+          direction={direction}
           onPrevious={projects.length > 1 ? () => step(-1) : undefined}
           onNext={projects.length > 1 ? () => step(1) : undefined}
         />
