@@ -132,10 +132,6 @@ h6 {
   gap: 90px;
 }
 
-body[data-spotlight-open] .proximity-sidebar {
-  visibility: hidden;
-}
-
 .content-box {
   padding: 0 24px;
 }
