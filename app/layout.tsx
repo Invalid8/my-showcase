@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -86,6 +87,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <ScrollProvider>{children}</ScrollProvider>
+        {process.env.NODE_ENV === "production" && <Analytics />}
       </body>
     </html>
   );

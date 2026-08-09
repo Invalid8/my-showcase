@@ -10,6 +10,7 @@
     "format": "biome format --write"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "clsx": "^2.1.1",
     "hast-util-to-jsx-runtime": "^2.3.6",
     "motion": "^13.0.0",
