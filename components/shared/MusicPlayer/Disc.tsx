@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 const GROOVES = {
   fine: [
     "repeating-radial-gradient(circle closest-side at 50% 50%, rgba(0,0,0,0.4) 0 0.6%, transparent 0.6% 2.9%, rgba(255,255,255,0.04) 2.9% 3.5%, transparent 3.5% 5.8%)",
@@ -29,6 +31,7 @@ export type DiscProps = {
   active?: boolean;
   revolution?: number;
   grooves?: keyof typeof GROOVES;
+  priority?: boolean;
   className?: string;
 };
 
@@ -39,6 +42,7 @@ function Disc({
   active = false,
   revolution = 1.8,
   grooves = "coarse",
+  priority = false,
   className = "",
 }: DiscProps) {
   return (
@@ -61,11 +65,18 @@ function Disc({
           backgroundImage: GROOVES[grooves],
         }}
       >
-        <div
-          className="absolute left-1/2 top-1/2 aspect-square w-[42%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-deep bg-cover bg-center"
-          style={artwork ? { backgroundImage: `url("${artwork}")` } : undefined}
-        >
-          {!artwork && (
+        <div className="absolute left-1/2 top-1/2 aspect-square w-[42%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full bg-accent-deep">
+          {artwork ? (
+            <Image
+              src={artwork}
+              alt=""
+              fill
+              sizes="120px"
+              priority={priority}
+              fetchPriority={priority ? "high" : undefined}
+              className="rounded-full object-cover"
+            />
+          ) : (
             <span className="grid size-full place-items-center px-2 text-center font-mono text-[0.5rem] uppercase leading-tight tracking-widest text-accent">
               {label}
             </span>

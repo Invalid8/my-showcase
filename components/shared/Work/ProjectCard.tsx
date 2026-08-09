@@ -14,7 +14,6 @@ function ProjectCard({ project, priority = false }: ProjectCardProps) {
       href={project.href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`${project.name}, opens in a new tab`}
       className="group relative block aspect-504/297 w-[min(504px,82vw)] overflow-hidden rounded-[3px] border border-line text-left outline-offset-4 transition-colors duration-200 hover:border-line-strong focus-visible:outline-2 focus-visible:outline-accent"
     >
       <Image
@@ -23,6 +22,7 @@ function ProjectCard({ project, priority = false }: ProjectCardProps) {
         fill
         sizes="(max-width: 768px) 82vw, 504px"
         priority={priority}
+        fetchPriority={priority ? "high" : undefined}
         className="object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.03]"
       />
 
@@ -42,6 +42,7 @@ function ProjectCard({ project, priority = false }: ProjectCardProps) {
           <span className="mt-[7px] block truncate font-mono text-[11.5px] tracking-[0.3px] text-secondary">
             {project.descriptor}
           </span>
+          <span className="sr-only">(opens in a new tab)</span>
         </span>
         <ArrowUpRight className="size-4 shrink-0 text-accent transition-transform duration-300 ease-out motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5" />
       </div>

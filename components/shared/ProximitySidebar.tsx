@@ -116,17 +116,19 @@ const getSectionKind = (section: ProximitySection): SectionKind => {
 
 type DashProps = {
   active: boolean;
+  interactive: boolean;
   mouseY: MotionValue<number>;
   onSelect: (id: string) => void;
   section: ProximitySection;
   sectionKind: SectionKind;
   side: Side;
   dashId: string;
-  registerDash: (id: string, node: HTMLButtonElement | null) => void;
+  registerDash: (id: string, node: HTMLElement | null) => void;
 };
 
 function Dash({
   active,
+  interactive,
   mouseY,
   onSelect,
   section,
@@ -135,7 +137,7 @@ function Dash({
   dashId,
   registerDash,
 }: DashProps) {
-  const ref = useRef<HTMLButtonElement>(null);
+  const ref = useRef<HTMLElement>(null);
   const preset = dashPresets[sectionKind];
 
   useEffect(() => {
@@ -162,25 +164,41 @@ function Dash({
     mass: 0.7,
   });
 
+  const mark = (
+    <motion.span
+      className={`block transition-colors duration-150 group-focus-visible:ring-2 group-focus-visible:ring-accent ${active ? "bg-accent" : preset.className}`}
+      style={{
+        width: MAX_DASH_WIDTH,
+        height: active ? 2 : 1,
+        scaleX: scale,
+        transformOrigin: side === "left" ? "left center" : "right center",
+      }}
+    />
+  );
+
+  if (!interactive) {
+    return (
+      <span
+        ref={ref as React.RefObject<HTMLSpanElement>}
+        aria-hidden="true"
+        className="flex h-px w-[110px] items-center"
+      >
+        {mark}
+      </span>
+    );
+  }
+
   return (
     <button
-      ref={ref}
+      ref={ref as React.RefObject<HTMLButtonElement>}
       type="button"
       aria-current={active ? "location" : undefined}
       aria-label={`Go to ${section.label}`}
       title={section.label}
-      className="group flex h-px w-[110px] items-center border-0 bg-transparent p-0 outline-none"
+      className="group -my-3 box-content flex h-px w-[110px] items-center border-0 bg-transparent px-0 py-3 outline-none"
       onClick={() => onSelect(section.id)}
     >
-      <motion.span
-        className={`block transition-colors duration-150 group-focus-visible:ring-2 group-focus-visible:ring-accent ${active ? "bg-accent" : preset.className}`}
-        style={{
-          width: MAX_DASH_WIDTH,
-          height: active ? 2 : 1,
-          scaleX: scale,
-          transformOrigin: side === "left" ? "left center" : "right center",
-        }}
-      />
+      {mark}
     </button>
   );
 }
@@ -193,7 +211,7 @@ function ProximitySidebar({
 }: ProximitySidebarProps) {
   const mouseY = useMotionValue(Number.POSITIVE_INFINITY);
   const shouldReduceMotion = useReducedMotion();
-  const dashRefs = useRef(new Map<string, HTMLButtonElement>());
+  const dashRefs = useRef(new Map<string, HTMLElement>());
   const pointerInside = useRef(false);
   const [detected, setDetected] = useState<ProximitySection[]>([]);
   const resolved = sections ?? detected;
@@ -230,13 +248,10 @@ function ProximitySidebar({
     };
   }, [sections, container, headings]);
 
-  const registerDash = useCallback(
-    (id: string, node: HTMLButtonElement | null) => {
-      if (node) dashRefs.current.set(id, node);
-      else dashRefs.current.delete(id);
-    },
-    [],
-  );
+  const registerDash = useCallback((id: string, node: HTMLElement | null) => {
+    if (node) dashRefs.current.set(id, node);
+    else dashRefs.current.delete(id);
+  }, []);
 
   const pulseSection = useCallback(
     (id?: string) => {
@@ -352,6 +367,7 @@ function ProximitySidebar({
             <Dash
               key={`${section.id}-${index}`}
               active={index === 0 && section.id === activeId}
+              interactive={index === 0}
               mouseY={mouseY}
               onSelect={selectSection}
               section={section}

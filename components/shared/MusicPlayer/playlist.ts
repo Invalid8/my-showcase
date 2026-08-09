@@ -72,7 +72,7 @@ function pickThumbnail(
   thumbnails: Record<string, { url?: string } | undefined> | undefined,
   videoId: string,
 ): string {
-  const best = thumbnails?.maxres?.url ?? thumbnails?.medium?.url;
+  const best = thumbnails?.high?.url ?? thumbnails?.medium?.url;
   return best ?? `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
 }
 

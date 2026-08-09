@@ -98,6 +98,7 @@ export function useYouTubePlayer({
   const videoIdRef = useRef(videoId);
   const shouldAutoplayRef = useRef(false);
 
+  const [armed, setArmed] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
@@ -112,6 +113,12 @@ export function useYouTubePlayer({
   }, [onEnded, onUnplayable, videoId]);
 
   useEffect(() => {
+    if (videoId) setArmed(true);
+  }, [videoId]);
+
+  useEffect(() => {
+    if (!armed) return;
+
     let cancelled = false;
 
     loadYouTubeApi()
@@ -177,7 +184,7 @@ export function useYouTubePlayer({
       playerRef.current = null;
       if (containerRef.current) containerRef.current.textContent = "";
     };
-  }, []);
+  }, [armed]);
 
   useEffect(() => {
     const player = playerRef.current;

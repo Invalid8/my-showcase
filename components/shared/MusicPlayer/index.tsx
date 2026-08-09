@@ -12,6 +12,8 @@ import { trackArtwork, trackId } from "./utils";
 
 type MusicPlayerProps = {
   source?: Playlist;
+  variant?: "stacked" | "side";
+  showIntro?: boolean;
 };
 
 type FloatingPosition = {
@@ -34,7 +36,12 @@ const getFloatingPosition = (section: HTMLElement): FloatingPosition => {
   return { left: viewportLeft - sectionRect.left, top: top - sectionRect.top };
 };
 
-function MusicPlayer({ source = playlist }: MusicPlayerProps) {
+function MusicPlayer({
+  source = playlist,
+  variant = "stacked",
+  showIntro = true,
+}: MusicPlayerProps) {
+  const side = variant === "side";
   const [unplayable, setUnplayable] = useState<string[]>([]);
   const tracks = useMemo(
     () => source.tracks.filter((track) => !unplayable.includes(trackId(track))),
@@ -165,17 +172,61 @@ function MusicPlayer({ source = playlist }: MusicPlayerProps) {
     dragOffset.current = undefined;
   }, []);
 
+  const discs = (
+    <ul
+      className={
+        side
+          ? "flex gap-5 overflow-x-auto pb-4 pe-6 lg:fixed lg:inset-y-0 lg:left-[calc(50%+486px)] lg:z-30 lg:w-46 lg:flex-col lg:gap-6 lg:overflow-x-visible lg:overflow-y-auto lg:px-2 lg:py-6 lg:pb-6 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+          : "flex w-max gap-6.25 pe-4 ps-[max(16px,calc(50vw-406px))] md:pe-6 pb-5"
+      }
+    >
+      {tracks.map((track, position) => {
+        const isCurrent = position === index;
+
+        return (
+          <li key={trackId(track) || track.url} className="shrink-0">
+            <button
+              type="button"
+              onClick={() => select(position)}
+              aria-current={isCurrent}
+              aria-label={`${track.title} by ${track.artist}`}
+              className="block w-42 rounded-full outline-offset-4 transition-opacity duration-200 focus-visible:outline-2 focus-visible:outline-accent motion-safe:hover:opacity-90"
+            >
+              <Disc
+                artwork={trackArtwork(track)}
+                label={track.title}
+                spinning={isCurrent && (isPlaying || isBuffering)}
+                active={isCurrent}
+                grooves="coarse"
+              />
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+
   return (
     <section ref={sectionRef} suppressHydrationWarning className="relative">
-      <div className="content-box">
-        <h2 className="font-mono text-sm uppercase tracking-[1.4px] text-label">
-          Currently listening
-        </h2>
-        <p className="max-w-176.5 pt-4 text-[15.5px]/[25px] text-secondary">
-          Usually somewhere in the background while I&rsquo;m working.
-        </p>
+      <div className={side ? "" : "content-box"}>
+        {showIntro && (
+          <>
+            <h2 className="font-mono text-sm uppercase tracking-[1.4px] text-label">
+              Currently listening
+            </h2>
+            <p className="max-w-176.5 pt-4 text-[15.5px]/[25px] text-secondary">
+              Usually somewhere in the background while I&rsquo;m working.
+            </p>
+          </>
+        )}
 
-        <div className="flex flex-col items-stretch gap-6 pt-12">
+        <div
+          className={
+            side
+              ? "flex flex-col items-stretch gap-8 ps-[max(24px,calc(50vw-430px))] pe-0 lg:block lg:pe-24"
+              : "flex flex-col items-stretch gap-6 pt-12"
+          }
+        >
           <Turnable
             track={current}
             isPlaying={isPlaying}
@@ -206,6 +257,8 @@ function MusicPlayer({ source = playlist }: MusicPlayerProps) {
               />
             </div>
           )}
+
+          {side && discs}
         </div>
 
         {failed && (
@@ -215,33 +268,7 @@ function MusicPlayer({ source = playlist }: MusicPlayerProps) {
         )}
       </div>
 
-      <div className="slider pt-14">
-        <ul className="flex w-max gap-6.25 pe-4 ps-[max(16px,calc(50vw-406px))] md:pe-6 pb-5">
-          {tracks.map((track, position) => {
-            const isCurrent = position === index;
-
-            return (
-              <li key={trackId(track) || track.url}>
-                <button
-                  type="button"
-                  onClick={() => select(position)}
-                  aria-current={isCurrent}
-                  aria-label={`${track.title} by ${track.artist}`}
-                  className="block w-42 rounded-full outline-offset-4 transition-opacity duration-200 focus-visible:outline-2 focus-visible:outline-accent motion-safe:hover:opacity-90"
-                >
-                  <Disc
-                    artwork={trackArtwork(track)}
-                    label={track.title}
-                    spinning={isCurrent && (isPlaying || isBuffering)}
-                    active={isCurrent}
-                    grooves="coarse"
-                  />
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+      {!side && <div className="slider pt-14">{discs}</div>}
 
       <NowPlayingModal
         open={detailsOpen && !!current}

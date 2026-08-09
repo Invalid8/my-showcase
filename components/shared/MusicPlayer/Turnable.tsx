@@ -100,6 +100,7 @@ function Turnable({
             spinning={live}
             active
             grooves="fine"
+            priority
           />
         </button>
 
@@ -259,7 +260,7 @@ function Turnable({
 
             <span className="h-px w-2.5 shrink-0 bg-line-strong" />
             <span className="truncate text-[13px] text-secondary">
-              {track?.artist ?? "Choose a record below"}
+              {track?.artist ?? "Choose a record"}
             </span>
           </div>
 

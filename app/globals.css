@@ -16,8 +16,8 @@
 
   --surface: #e8e7e1;
   --surface-raised: #f8f7f3;
-  --text-label: #6c6a63;
-  --text-muted: #77746d;
+  --text-label: #63615a;
+  --text-muted: #6a6760;
   --text-primary: #171717;
   --text-secondary: #68665f;
 
@@ -69,8 +69,8 @@
     --surface: #161616;
     --surface-raised: #1d1d1d;
 
-    --text-label: #767676;
-    --text-muted: #5c5c5c;
+    --text-label: #909090;
+    --text-muted: #878787;
     --text-primary: #f2f2f2;
     --text-secondary: #949494;
 
@@ -93,8 +93,8 @@
 
   --surface: #161616;
   --surface-raised: #1d1d1d;
-  --text-label: #767676;
-  --text-muted: #5c5c5c;
+  --text-label: #909090;
+  --text-muted: #878787;
   --text-primary: #f2f2f2;
   --text-secondary: #949494;
 
@@ -148,6 +148,11 @@ h6 {
 }
 
 /* slider */
+
+.full-bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
 
 .slider {
   position: relative;
