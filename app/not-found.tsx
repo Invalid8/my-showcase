@@ -16,7 +16,7 @@ async function NotFound() {
   const source = await getPlaylist(PLAYLIST_ID, playlist);
 
   return (
-    <div>
+    <div className="deck-page">
       <main className="container-box min-h-[80svh] pt-20">
         <div className="space-y-8">
           <div className="content-box space-y-5">
@@ -39,12 +39,10 @@ async function NotFound() {
             </Link>
           </div>
 
-          <div className="full-bleed">
-            <MusicPlayer source={source} variant="side" showIntro={false} />
-          </div>
+          <MusicPlayer source={source} variant="side" showIntro={false} />
         </div>
       </main>
-      <SiteFooter className="max-w-[860px]" />
+      <SiteFooter className="max-w-[770px]" />
     </div>
   );
 }

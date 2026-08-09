@@ -120,6 +120,7 @@ h6 {
 
 :root {
   --deck-height: calc((min(860px, 100vw) - 48px) * 464 / 828);
+  --content-pad: 24px;
 }
 
 .container-box {
@@ -133,26 +134,56 @@ h6 {
 }
 
 .content-box {
-  padding: 0 24px;
+  padding: 0 var(--content-pad);
 }
 
 @media (max-width: 768px) {
+  :root {
+    --content-pad: 16px;
+  }
+
   .container-box {
     max-width: 100%;
     gap: 80px;
   }
+}
 
-  .content-box {
-    padding: 0 16px;
+/* deck page */
+
+.deck-page {
+  --rail-width: 168px;
+  --rail-gap: 64px;
+  --rail-pad: 8px;
+  --deck-page-width: calc(
+    860px +
+    var(--content-pad) +
+    var(--rail-gap) +
+    var(--rail-width)
+  );
+}
+
+@media (min-width: 1280px) {
+  .deck-page {
+    max-width: var(--deck-page-width);
+    margin: 0 auto;
+    padding-inline-end: calc(
+      var(--content-pad) +
+      var(--rail-gap) +
+      var(--rail-width)
+    );
+  }
+
+  .deck-rail {
+    left: calc(
+      max(0px, (100% - var(--deck-page-width)) / 2) +
+      860px +
+      var(--rail-gap) -
+      var(--rail-pad)
+    );
   }
 }
 
 /* slider */
-
-.full-bleed {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-}
 
 .slider {
   position: relative;

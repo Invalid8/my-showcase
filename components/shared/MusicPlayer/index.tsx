@@ -176,7 +176,7 @@ function MusicPlayer({
     <ul
       className={
         side
-          ? "flex gap-5 overflow-x-auto pb-4 pe-6 lg:fixed lg:inset-y-0 lg:left-[calc(50%+486px)] lg:z-30 lg:w-46 lg:flex-col lg:gap-6 lg:overflow-x-visible lg:overflow-y-auto lg:px-2 lg:py-6 lg:pb-6 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+          ? "deck-rail me-[calc(var(--content-pad)*-1)] flex gap-5 overflow-x-auto pb-4 pe-[var(--content-pad)] xl:fixed xl:inset-y-0 xl:z-30 xl:me-0 xl:w-46 xl:flex-col xl:gap-6 xl:overflow-x-visible xl:overflow-y-auto xl:px-2 xl:py-6 xl:pb-6 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
           : "flex w-max gap-6.25 pe-4 ps-[max(16px,calc(50vw-406px))] md:pe-6 pb-5"
       }
     >
@@ -208,7 +208,7 @@ function MusicPlayer({
 
   return (
     <section ref={sectionRef} suppressHydrationWarning className="relative">
-      <div className={side ? "" : "content-box"}>
+      <div className="content-box">
         {showIntro && (
           <>
             <h2 className="font-mono text-sm uppercase tracking-[1.4px] text-label">
@@ -223,7 +223,7 @@ function MusicPlayer({
         <div
           className={
             side
-              ? "flex flex-col items-stretch gap-8 ps-[max(24px,calc(50vw-430px))] pe-0 lg:block lg:pe-24"
+              ? "flex flex-col items-stretch gap-8 xl:block"
               : "flex flex-col items-stretch gap-6 pt-12"
           }
         >
