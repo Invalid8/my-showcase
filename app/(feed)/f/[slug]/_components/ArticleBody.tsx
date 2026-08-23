@@ -1,6 +1,6 @@
 import { renderMarkdown } from "@/lib/markdown";
 
-async function ArticleBody({
+async function FeedArticleBody({
   title,
   description,
   date,
@@ -108,4 +108,4 @@ function FallbackArticle() {
   );
 }
 
-export default ArticleBody;
+export default FeedArticleBody;

@@ -131,7 +131,7 @@ export const feedItems = [
     description:
       "A practical guide to scroll timelines, view timelines, and real UI demos.",
     tags: ["CSS", "Animation", "Performance"],
-    href: "/feed/scroll-driven-animations",
+    href: "/f/scroll-driven-animations",
   },
   {
     slug: "product-requirements-over-screens",
@@ -140,7 +140,7 @@ export const feedItems = [
     description:
       "Why the strongest interfaces usually start with a workflow, not a polished screen.",
     tags: ["Product", "Interface", "Systems"],
-    href: "/feed/product-requirements-over-screens",
+    href: "/f/product-requirements-over-screens",
   },
   {
     slug: "the-quiet-mobile-flow",
@@ -149,6 +149,6 @@ export const feedItems = [
     description:
       "Small decisions that make a mobile experience feel calm, clear, and ready for real use.",
     tags: ["Mobile", "UX", "Interaction"],
-    href: "/feed/the-quiet-mobile-flow",
+    href: "/f/the-quiet-mobile-flow",
   },
 ];
