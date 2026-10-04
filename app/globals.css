@@ -22,6 +22,8 @@
   --text-secondary: #68665f;
 
   --warm: #b07a4a;
+
+  --card-tint: color-mix(in oklab, var(--foreground) 8%, var(--background));
 }
 
 @theme inline {
@@ -50,6 +52,8 @@
   --color-secondary: var(--text-secondary);
 
   --color-warm: var(--warm);
+
+  --color-card-tint: var(--card-tint);
 }
 
 @media (prefers-color-scheme: dark) {
