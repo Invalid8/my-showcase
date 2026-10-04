@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { ScrollProvider } from "@/context/ScrollContext";
 import { siteConfig } from "@/lib/seo";
@@ -86,7 +87,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <ScrollProvider>{children}</ScrollProvider>
+        <ThemeProvider attribute="data-theme" disableTransitionOnChange>
+          <ScrollProvider>{children}</ScrollProvider>
+        </ThemeProvider>
         {process.env.NODE_ENV === "production" && <Analytics />}
       </body>
     </html>
