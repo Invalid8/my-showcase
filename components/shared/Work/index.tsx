@@ -19,7 +19,7 @@ function Work({ projects = defaultProjects }: WorkProps) {
         <ul className="flex w-max gap-9 pe-4 ps-[max(16px,calc(50vw-406px))] md:pe-6">
           {projects.map((project, index) => (
             <li key={`${project.name}-${project.href}-${index}`}>
-              <ProjectCard project={project} priority={index === 0} />
+              <ProjectCard project={project} priority={index < 2} />
             </li>
           ))}
         </ul>

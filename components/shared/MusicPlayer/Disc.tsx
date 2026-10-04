@@ -70,11 +70,12 @@ function Disc({
             <Image
               src={artwork}
               alt=""
-              fill
+              width={120}
+              height={120}
               sizes="120px"
               priority={priority}
               fetchPriority={priority ? "high" : undefined}
-              className="rounded-full object-cover"
+              className="size-full rounded-full object-cover"
             />
           ) : (
             <span className="grid size-full place-items-center px-2 text-center font-mono text-[0.5rem] uppercase leading-tight tracking-widest text-accent">

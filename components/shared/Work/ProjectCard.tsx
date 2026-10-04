@@ -20,11 +20,12 @@ function ProjectCard({ project, priority = false }: ProjectCardProps) {
         <Image
           src={project.image}
           alt=""
-          fill
+          width={720}
+          height={424}
           sizes="(max-width: 768px) 88vw, 720px"
           priority={priority}
           fetchPriority={priority ? "high" : undefined}
-          className="object-cover object-top transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.03]"
+          className="size-full object-cover object-top transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.03]"
         />
       </div>
 
