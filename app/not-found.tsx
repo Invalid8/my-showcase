@@ -17,7 +17,7 @@ async function NotFound() {
 
   return (
     <div className="deck-page">
-      <main className="container-box min-h-[80svh] pt-20">
+      <main id="content" className="container-box min-h-[80svh] pt-20">
         <div className="space-y-8">
           <div className="content-box space-y-5">
             <p className="font-display text-[clamp(4.5rem,16vw,150px)] font-extrabold leading-[0.82] tracking-[-0.05em] text-accent">

@@ -8,6 +8,7 @@ export const siteConfig = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://dalgoridim.com",
   locale: "en_US",
   twitter: "@dalgoridim",
+  email: "b.fadamitan2019@gmail.com",
   defaultOgImage: "/opengraph-image",
 } as const;
 

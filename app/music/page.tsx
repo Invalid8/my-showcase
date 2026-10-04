@@ -21,7 +21,7 @@ async function page() {
 
   return (
     <div>
-      <main className="container-box min-h-[80svh] pt-20">
+      <main id="content" className="container-box min-h-[80svh] pt-20">
         <div className="content-box space-y-6">
           <p className="font-mono text-[10px] uppercase tracking-[1.4px] text-label">
             Daniel Fadamitan

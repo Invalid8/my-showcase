@@ -133,7 +133,7 @@ async function page({ params }: FeedArticleProps) {
   const articleJson = JSON.stringify(articleSchema).replace(/</g, "\\u003c");
 
   return (
-    <main className="min-h-screen pt-20">
+    <main id="content" className="min-h-screen pt-20">
       <script type="application/ld+json">{articleJson}</script>
       <ProximitySidebar
         side="right"

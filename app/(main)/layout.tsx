@@ -17,7 +17,7 @@ function layout({ children }: { children: React.ReactNode }) {
           { id: "music", label: "Music", kind: "section" },
         ]}
       />
-      <main>{children}</main>
+      <main id="content">{children}</main>
       <SiteFooter />
     </div>
   );

@@ -112,18 +112,39 @@ async function page() {
     getPortfolioFeedItems(),
   ]);
 
-  const personSchema = {
+  const personId = absoluteUrl("/#person");
+  const schema = {
     "@context": "https://schema.org",
-    "@type": "Person",
-    name: siteConfig.name,
-    url: siteConfig.url,
-    jobTitle: "Frontend Engineer",
-    description: siteConfig.description,
-    image: absoluteUrl(siteConfig.defaultOgImage),
-    sameAs: socials
-      .filter((social) => social.href.startsWith("http"))
-      .map((social) => social.href),
-    knowsAbout: capabilities.map((capability) => capability.title),
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": absoluteUrl("/#website"),
+        name: siteConfig.name,
+        url: siteConfig.url,
+        description: siteConfig.description,
+        inLanguage: "en",
+        publisher: { "@id": personId },
+      },
+      {
+        "@type": "Person",
+        "@id": personId,
+        name: siteConfig.name,
+        url: siteConfig.url,
+        jobTitle: "Frontend Engineer",
+        description: siteConfig.description,
+        image: absoluteUrl(siteConfig.defaultOgImage),
+        sameAs: socials
+          .filter((social) => social.href.startsWith("http"))
+          .map((social) => social.href),
+        knowsAbout: capabilities.map((capability) => capability.title),
+        email: `mailto:${siteConfig.email}`,
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "professional inquiries",
+          email: siteConfig.email,
+        },
+      },
+    ],
   };
 
   return (
@@ -131,7 +152,7 @@ async function page() {
       <script
         type="application/ld+json"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: structured data must be inlined as JSON-LD
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
       <div id="intro" className="space-y-10 mt-30 content-box max-w-3xl">
         <div className="space-y-1">
@@ -308,6 +329,12 @@ async function page() {
             Book a 30-minute call
             <ArrowUpRight className="size-3.5 transition-transform duration-200 motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5" />
           </Link>
+          <a
+            href={`mailto:${siteConfig.email}`}
+            className="text-base text-secondary underline underline-offset-4 decoration-line-strong transition-colors duration-200 hover:text-accent hover:decoration-accent"
+          >
+            {siteConfig.email}
+          </a>
         </div>
       </div>
 
