@@ -1,7 +1,13 @@
 export type Img = { src: string; alt: string; width: number; height: number };
 
 export type Block =
-  | { type: "text"; heading?: string; body: string; note?: string }
+  | {
+      type: "text";
+      heading?: string;
+      body: string;
+      note?: string;
+      link?: { label: string; href: string };
+    }
   | { type: "image"; image: Img; caption: string; wide?: boolean }
   | { type: "pair"; images: [Img, Img]; caption: string }
   | {
@@ -143,6 +149,14 @@ export const caseStudies: CaseStudy[] = [
           "      100%  0:33 / 0:33  long1.opus",
           "done  long1.txt  0:33 of audio in 1:00 (0.5× real time)",
         ],
+      },
+      {
+        type: "text",
+        body: "It's free for Linux, macOS and Windows, and nothing you transcribe leaves your computer.",
+        link: {
+          label: "Download VScrybe",
+          href: "https://vscrybe.dalgoridim.com/download/",
+        },
       },
     ],
   },

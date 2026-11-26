@@ -1,6 +1,7 @@
 import type { Block } from "@/content/case-studies";
 import { NumberedList } from "../site/NumberedList";
 import { Section } from "../site/Section";
+import { TextLink } from "../site/TextLink";
 import { CopyButton } from "./CopyButton";
 import { ZoomImage } from "./ZoomImage";
 
@@ -39,7 +40,17 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
             {block.heading && (
               <h2 className="section-label">{block.heading}</h2>
             )}
-            <p>{block.body}</p>
+            <p>
+              {block.body}
+              {block.link && (
+                <>
+                  {" "}
+                  <TextLink href={block.link.href} arrow="external" dashed>
+                    {block.link.label}
+                  </TextLink>
+                </>
+              )}
+            </p>
             {block.note && (
               <aside className="margin-note">
                 <div className="mono-meta">Note</div>
