@@ -1106,7 +1106,9 @@ a.chip:hover::after {
 .code-block pre {
   margin: 0;
   padding: 18px 20px;
-  overflow-x: auto;
+  max-height: 440px;
+  overflow: auto;
+  overscroll-behavior: contain;
   font:
     13px / 1.7 var(--font-jetbrains-mono),
     monospace;

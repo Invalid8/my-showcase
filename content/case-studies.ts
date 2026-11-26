@@ -129,7 +129,38 @@ const fillyrProject = `export function projectField(field: FlyerField, from: Siz
   }
 }`;
 
-const waysdropMutation = `function stripRouteKeys<T extends object>(variables: T) {
+const waysdropMutation = `"use client"
+import {
+  useQuery,
+  useMutation,
+  UseQueryResult,
+  UseQueryOptions,
+  UseMutationResult,
+  UseMutationOptions,
+} from "@tanstack/react-query"
+import api from "@/lib/axios"
+import { ApiError } from "@/types"
+import { AxiosError } from "axios"
+
+export function useApiQuery<TResponse>(
+  key: unknown[],
+  url: string,
+  options?: Omit<
+    UseQueryOptions<TResponse, AxiosError<ApiError>>,
+    "queryKey" | "queryFn"
+  >
+): UseQueryResult<TResponse, AxiosError<ApiError>> {
+  return useQuery<TResponse, AxiosError<ApiError>>({
+    queryKey: key,
+    queryFn: async () => {
+      const { data } = await api.get<TResponse>(url)
+      return data
+    },
+    ...options,
+  })
+}
+
+function stripRouteKeys<T extends object>(variables: T): Omit<T, \`_\${string}\`> {
   return Object.fromEntries(
     Object.entries(variables).filter(([k]) => !k.startsWith("_"))
   ) as Omit<T, \`_\${string}\`>
@@ -138,16 +169,29 @@ const waysdropMutation = `function stripRouteKeys<T extends object>(variables: T
 export function useApiMutation<TResponse, TVariables = unknown>(
   url: string | ((variables: TVariables) => string),
   method: "post" | "put" | "patch" | "delete",
-  …
-) {
-  return useMutation({
+  options?: Omit<
+    UseMutationOptions<TResponse, AxiosError<ApiError>, TVariables>,
+    "mutationFn"
+  >
+): UseMutationResult<TResponse, AxiosError<ApiError>, TVariables, unknown> {
+  return useMutation<TResponse, AxiosError<ApiError>, TVariables, unknown>({
     mutationFn: async (variables) => {
-      const resolvedUrl = typeof url === "function" ? url(variables) : url
-      …
-      const { data } = await api.request({ url: resolvedUrl, method, data: body })
+      const resolvedUrl =
+        typeof url === "function" ? url(variables) : url
+      const body =
+        variables && typeof variables === "object"
+          ? stripRouteKeys(variables as object)
+          : variables
+      const { data } = await api.request<TResponse>({
+        url: resolvedUrl,
+        method,
+        data: body,
+      })
       return data
     },
-    …`;
+    ...options,
+  })
+}`;
 
 const waysdropMarkers = `const toRemove = Array.from(existingLocationIds).filter(
   (id) => !newLocationIds.has(id),
@@ -422,7 +466,7 @@ export const caseStudies: CaseStudy[] = [
         file: "lib/hub/headline.ts",
         lang: "ts",
         code: basebandCode,
-        caption: "Excerpt, trimmed with \u2026",
+        caption: "Excerpt, trimmed with …",
       },
       {
         type: "text",
@@ -434,7 +478,7 @@ export const caseStudies: CaseStudy[] = [
         src: "/work/baseband/action-loop.mp4",
         poster: "/work/baseband/action-loop.jpg",
         label:
-          "The Reboot button: unknown with a dot, tapped, Rebooting\u2026 in the same place, then supported without the dot",
+          "The Reboot button: unknown with a dot, tapped, Rebooting… in the same place, then supported without the dot",
         caption:
           "Unknown, tapped, pending in the same place, then supported. Rebuilt in HTML from the design's own values.",
       },
@@ -563,7 +607,7 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "text",
-        body: "Fillyr started with a \u20a6500 \"face of the week\" fee a friend and I didn't want to pay. I built a tool to fill a flyer template instead: two days of progress, then two days fighting Fabric.js, which kept placing images at the edge of the canvas, before I moved the editor to Konva. Then people started using it for church announcements, small business promos and events happening that weekend, so every detail since has served one idea: you shouldn't have to think.",
+        body: "Fillyr started with a ₦500 \"face of the week\" fee a friend and I didn't want to pay. I built a tool to fill a flyer template instead: two days of progress, then two days fighting Fabric.js, which kept placing images at the edge of the canvas, before I moved the editor to Konva. Then people started using it for church announcements, small business promos and events happening that weekend, so every detail since has served one idea: you shouldn't have to think.",
       },
       {
         type: "text",
@@ -597,19 +641,19 @@ export const caseStudies: CaseStudy[] = [
         file: "lib/text-fit.ts",
         lang: "ts",
         code: fillyrFit,
-        caption: "Excerpt, trimmed with \u2026",
+        caption: "Excerpt, trimmed with …",
       },
       {
         type: "text",
         heading: "Placed in the flyer's own pixels",
-        body: "Fields are stored in the flyer's own pixels, not the screen's: the name sits at x 161, y 971 on a 1080 \u00d7 1350 design, whatever size the editor happens to be drawn at. Each field remembers the size it was placed against and is projected onto whatever renders it, with its font sizes scaled too. A field dragged partly off the edge clips exactly as it will on the fill page, and one left entirely off is pulled back so it never becomes unreachable. Rotation snaps every 45\u00b0 within 5\u00b0, around the box's centre.",
+        body: "Fields are stored in the flyer's own pixels, not the screen's: the name sits at x 161, y 971 on a 1080 × 1350 design, whatever size the editor happens to be drawn at. Each field remembers the size it was placed against and is projected onto whatever renders it, with its font sizes scaled too. A field dragged partly off the edge clips exactly as it will on the fill page, and one left entirely off is pulled back so it never becomes unreachable. Rotation snaps every 45° within 5°, around the box's centre.",
       },
       {
         type: "code",
         file: "lib/field-geometry.ts",
         lang: "ts",
         code: fillyrProject,
-        caption: "Excerpt, trimmed with \u2026",
+        caption: "Excerpt, trimmed with …",
       },
       {
         type: "text",
@@ -661,8 +705,8 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "loop",
-        src: "/work/waysdrop/promo-toggle.mp4",
-        poster: "/work/waysdrop/promo-toggle.jpg",
+        src: "/work/waysdrop/promo-toggle-v2.mp4",
+        poster: "/work/waysdrop/promo-toggle-v2.jpg",
         label:
           "Disabling a promo code: the menu, a confirmation, then the row's status changes to Disabled without a reload, and back",
         caption:
@@ -673,7 +717,7 @@ export const caseStudies: CaseStudy[] = [
         file: "lib/hooks/use-api.ts",
         lang: "ts",
         code: waysdropMutation,
-        caption: "Excerpt from the support dashboard, trimmed with \u2026",
+        caption: "The whole hook, from the support dashboard.",
       },
       {
         type: "text",
@@ -694,7 +738,7 @@ export const caseStudies: CaseStudy[] = [
         file: "components/custom/map/GoogleMaps.tsx",
         lang: "ts",
         code: waysdropMarkers,
-        caption: "Excerpt, trimmed with \u2026",
+        caption: "Excerpt, trimmed with …",
       },
       {
         type: "text",
@@ -716,12 +760,7 @@ export const caseStudies: CaseStudy[] = [
         file: "src/lib/socket.ts",
         lang: "ts",
         code: waysdropSocket,
-        caption: "Excerpt, trimmed with \u2026",
-      },
-      {
-        type: "text",
-        body: "This was client work, so only the components are shown here.",
-        link: { label: "waysdrop.com", href: "https://waysdrop.com" },
+        caption: "Excerpt, trimmed with …",
       },
     ],
   },
