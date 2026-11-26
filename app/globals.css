@@ -1529,14 +1529,9 @@ button.heart {
   font-size: 14px;
 }
 
-@media (max-width: 720px) {
-  .cv {
-    padding: 32px 24px;
-  }
-
-  .cv-grid {
-    grid-template-columns: 1fr;
-  }
+.sheet-fit > .cv {
+  width: 794px;
+  zoom: var(--sheet-scale, 1);
 }
 
 @media print {
@@ -1565,6 +1560,11 @@ button.heart {
     border-radius: 0;
     padding: 48px 56px;
     min-height: 297mm;
+  }
+
+  .sheet-fit > .cv {
+    width: auto;
+    zoom: 1;
   }
 
   .cv-grid {
