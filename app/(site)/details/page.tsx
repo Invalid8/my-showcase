@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import type { CSSProperties, ReactNode } from "react";
+import { ZoomImage } from "@/components/blocks/ZoomImage";
 import { HeartBurst } from "@/components/site/HeartBurst";
 import { KindFilter } from "@/components/site/KindFilter";
 import { MonoMeta } from "@/components/site/MonoMeta";
@@ -99,7 +100,7 @@ export default function DetailsPage() {
               <div className="states">
                 {sheetStates.map((state) => (
                   <figure key={state.src}>
-                    <Image
+                    <ZoomImage
                       src={state.src}
                       alt={`Baseband address sheet: ${state.caption.slice(3)}`}
                       width={540}
@@ -203,7 +204,7 @@ export default function DetailsPage() {
             title="Click a line, hear that moment"
             media={
               <div className="frame">
-                <Image
+                <ZoomImage
                   src="/details/vs-listen-dark.webp"
                   alt="A VScrybe session with timestamp pills beside each transcript line"
                   width={1560}

@@ -1494,3 +1494,94 @@ button.heart {
 .home[data-intro="on"] main > section:first-child {
   transform: none;
 }
+
+/* lightbox */
+
+.zoom-trigger {
+  display: block;
+  width: 100%;
+  cursor: zoom-in;
+}
+
+.zoom-trigger img {
+  transition: opacity 160ms ease-out;
+}
+
+.zoom-trigger:hover img {
+  opacity: 0.92;
+}
+
+.lightbox {
+  margin: auto;
+  max-width: 100vw;
+  max-height: 100vh;
+  width: 100vw;
+  height: 100vh;
+  padding: 48px;
+  border: 0;
+  background: transparent;
+  display: none;
+  place-items: center;
+  cursor: zoom-out;
+}
+
+.lightbox[open] {
+  display: grid;
+  animation: lightbox-in 220ms ease-out;
+}
+
+.lightbox::backdrop {
+  background: rgb(8 8 8 / 0.9);
+  animation: backdrop-in 220ms ease-out;
+}
+
+.lightbox img {
+  max-width: 100%;
+  max-height: calc(100vh - 96px);
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  cursor: default;
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 18px;
+  right: 22px;
+  font:
+    12px / 1.6 var(--font-jetbrains-mono),
+    monospace;
+  color: #b8b8b8;
+  cursor: pointer;
+  transition: color 160ms ease-out;
+}
+
+.lightbox-close:hover {
+  color: #fff;
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .lightbox {
+    padding: 48px 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox[open],
+  .lightbox::backdrop {
+    animation: none;
+  }
+}

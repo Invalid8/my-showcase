@@ -1,9 +1,9 @@
-import Image from "next/image";
 import type { Block } from "@/content/case-studies";
 import { NumberedList } from "../site/NumberedList";
 import { Section } from "../site/Section";
 import { CopyButton } from "./CopyButton";
 import { LivePreview } from "./LivePreview";
+import { ZoomImage } from "./ZoomImage";
 
 function Figure({
   n,
@@ -54,7 +54,7 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
         return (
           <Figure key={key} n={fig} caption={block.caption} wide={block.wide}>
             <div className="frame">
-              <Image
+              <ZoomImage
                 {...block.image}
                 sizes="(max-width: 720px) 100vw, 880px"
                 loading={index === lead ? "eager" : "lazy"}
@@ -70,7 +70,10 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
             <div className="pair">
               {block.images.map((image) => (
                 <div key={image.src} className="frame">
-                  <Image {...image} sizes="(max-width: 720px) 100vw, 440px" />
+                  <ZoomImage
+                    {...image}
+                    sizes="(max-width: 720px) 100vw, 440px"
+                  />
                 </div>
               ))}
             </div>
