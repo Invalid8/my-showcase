@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { MonoMeta } from "@/components/site/MonoMeta";
 import { PageHead } from "@/components/site/PageHead";
 import { TextLink } from "@/components/site/TextLink";
 import { dayMonth, year } from "@/lib/dates";
@@ -47,7 +46,7 @@ export default async function WritingPage() {
 
       {byYear(items).map(([group, entries]) => (
         <section key={group} className="section" aria-label={String(group)}>
-          <MonoMeta className="year-label">{group}</MonoMeta>
+          <h2 className="mono-meta year-label">{group}</h2>
           <ol className="numbered">
             {entries.map((item) => (
               <li key={item.slug}>

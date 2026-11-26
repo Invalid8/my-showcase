@@ -29,6 +29,7 @@ function Figure({
 
 export function Blocks({ blocks }: { blocks: Block[] }) {
   let fig = 0;
+  const lead = blocks.findIndex((block) => block.type === "image");
 
   return blocks.map((block, index) => {
     const key = `${block.type}-${index}`;
@@ -53,7 +54,12 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
         return (
           <Figure key={key} n={fig} caption={block.caption} wide={block.wide}>
             <div className="frame">
-              <Image {...block.image} sizes="(max-width: 720px) 100vw, 880px" />
+              <Image
+                {...block.image}
+                sizes="(max-width: 720px) 100vw, 880px"
+                loading={index === lead ? "eager" : "lazy"}
+                fetchPriority={index === lead ? "high" : "auto"}
+              />
             </div>
           </Figure>
         );
