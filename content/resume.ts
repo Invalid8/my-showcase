@@ -8,7 +8,7 @@ export const resume = {
     {
       company: "Waysdrop",
       title: "Frontend Developer",
-      dates: "Dec 2025 – Mar 2026",
+      dates: "May 2025 – Jun 2026",
       body: "Built the web side of an on-demand delivery platform connecting individuals, stores and couriers: the customer web app, admin, agent and support dashboards, chat and the landing page.",
     },
     {

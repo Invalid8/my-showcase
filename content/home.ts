@@ -122,7 +122,7 @@ export const work: WorkEntry[] = [
     origin: "client",
     story:
       "I owned the web frontend: the customer app, the admin, agent and support dashboards, and the chat widget, which I packaged on its own so every app could share it. Most screens are built from a handful of components and hooks I wrote once.",
-    meta: "Dec 2025 – Mar 2026 · frontend · Next.js, TanStack, Socket.IO",
+    meta: "May 2025 – Jun 2026 · frontend · Next.js, TanStack, Socket.IO",
   },
 ];
 

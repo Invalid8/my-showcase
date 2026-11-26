@@ -682,7 +682,7 @@ export const caseStudies: CaseStudy[] = [
     line: "On-demand delivery, connecting people, stores and couriers.",
     facts: [
       { label: "Role", value: "Frontend developer" },
-      { label: "When", value: "Dec 2025 – Mar 2026" },
+      { label: "When", value: "May 2025 – Jun 2026" },
       {
         label: "Built with",
         value: "Next.js, TanStack Query and Table, Google Maps, Socket.IO",
