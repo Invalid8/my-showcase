@@ -97,6 +97,37 @@ const basebandSheet = `const hide = useCallback(
   …
 );`;
 
+const fillyrFit = `const fits = (size: number) => {
+  ctx.font = fontSpec(style, size)
+  const lines = wrapText(ctx, text || " ", width)
+  if (lines.length * size * lineHeight > height) return false
+  return lines.every((line) => ctx.measureText(line).width <= width)
+}
+…
+while (lo <= hi) {
+  const mid = (lo + hi) >> 1
+  if (fits(mid)) {
+    best = mid
+    lo = mid + 1
+  } else {
+    hi = mid - 1
+  }
+}`;
+
+const fillyrProject = `export function projectField(field: FlyerField, from: Size, to: Size) {
+  const scaleX = to.w / Math.max(from.w, 1)
+  const scaleY = to.h / Math.max(from.h, 1)
+
+  return {
+    ...field,
+    x: field.x * scaleX,
+    y: field.y * scaleY,
+    width: field.width * scaleX,
+    height: field.height * scaleY,
+    …
+  }
+}`;
+
 export const caseStudies: CaseStudy[] = [
   {
     slug: "vscrybe",
@@ -449,10 +480,10 @@ export const caseStudies: CaseStudy[] = [
     icon: "/icons/fillyr.png",
     line: "Turn any flyer into a fillable link.",
     facts: [
-      { label: "Role", value: "Fullstack" },
+      { label: "Role", value: "Design and engineering, start to finish" },
       {
         label: "Built with",
-        value: "Next.js, tRPC, Drizzle on Neon, Cloudinary",
+        value: "Next.js, tRPC, Drizzle, Konva, Cloudflare R2",
       },
     ],
     links: [
@@ -464,29 +495,84 @@ export const caseStudies: CaseStudy[] = [
     ],
     blocks: [
       {
-        type: "text",
-        body: "Upload a design, map its fields on a canvas and share one link. Everyone who fills it downloads their own personalised copy, with their name and photo, instantly.",
-      },
-      {
         type: "image",
         wide: true,
         image: {
-          src: "/work/fillyr-editor.png",
-          alt: "The Fillyr editor with fields mapped on top of a flyer",
+          src: "/work/fillyr/editor.png",
+          alt: "The Fillyr editor with a youth convention flyer, a circular photo slot and a name field in gold",
           width: 2880,
           height: 1800,
         },
-        caption: "The editor, where fields are placed on top of the flyer.",
+        caption:
+          "The editor, with a photo slot and a name field mapped onto a church convention flyer.",
       },
       {
         type: "text",
-        heading: "Who it turned out to be for",
-        body: "People were making flyers for church announcements, small business promos and events happening this weekend. They needed something fast that looked okay, without first explaining Canva.",
+        body: "Fillyr started with a \u20a6500 \"face of the week\" fee a friend and I didn't want to pay. I built a tool to fill a flyer template instead: two days of progress, then two days fighting Fabric.js, which kept placing images at the edge of the canvas, before I moved the editor to Konva. Then people started using it for church announcements, small business promos and events happening that weekend, so every detail since has served one idea: you shouldn't have to think.",
       },
       {
-        type: "quote",
-        text: "The value isn't the canvas. The value is that you don't have to think.",
-        source: "from what actually happened when I shipped Fillyr",
+        type: "text",
+        heading: "A colour straight off the flyer",
+        body: "Text you add should look like it was always part of the design, so the colour picker samples the flyer itself. Where the browser has an eyedropper, Fillyr hands over to it. Everywhere else it draws the flyer at full resolution into a hidden canvas and reads the exact pixel under your click, mapped from the scaled preview.",
+      },
+      {
+        type: "loop",
+        src: "/work/fillyr/sample-loop.mp4",
+        poster: "/work/fillyr/sample-loop.jpg",
+        label:
+          "The Fillyr editor: sampling gold from the flyer's ring for the name, then centring and bolding it",
+        caption:
+          "Sampling the ring's gold for the name, then centring it. Recorded in the real editor.",
+      },
+      {
+        type: "text",
+        heading: "Text that fits the box it's given",
+        body: "Names are never the length you designed for. With auto-fit on, a field finds the largest size its text fits at, by binary search between the field's minimum and maximum. Multiline text wraps first and only shrinks once wrapping no longer fits. The same measuring code runs in the editor, on the fill page and in the exported PNG, so what you see while typing is what downloads. The photo you add never leaves your browser.",
+      },
+      {
+        type: "loop",
+        src: "/work/fillyr/fit-loop.mp4",
+        poster: "/work/fillyr/fit-loop.jpg",
+        label:
+          "The public fill page: typing a short name, then a long one that shrinks to fit the bar",
+        caption: "A short name, then a long one, on the public fill page.",
+      },
+      {
+        type: "code",
+        file: "lib/text-fit.ts",
+        lang: "ts",
+        code: fillyrFit,
+        caption: "Excerpt, trimmed with \u2026",
+      },
+      {
+        type: "text",
+        heading: "Placed in the flyer's own pixels",
+        body: "Fields are stored in the flyer's own pixels, not the screen's: the name sits at x 161, y 971 on a 1080 \u00d7 1350 design, whatever size the editor happens to be drawn at. Each field remembers the size it was placed against and is projected onto whatever renders it, with its font sizes scaled too. A field dragged partly off the edge clips exactly as it will on the fill page, and one left entirely off is pulled back so it never becomes unreachable. Rotation snaps every 45\u00b0 within 5\u00b0, around the box's centre.",
+      },
+      {
+        type: "code",
+        file: "lib/field-geometry.ts",
+        lang: "ts",
+        code: fillyrProject,
+        caption: "Excerpt, trimmed with \u2026",
+      },
+      {
+        type: "text",
+        heading: "Fifty cards from one CSV",
+        body: "For a class register or fifty vendors, Bulk Fill writes a CSV template whose columns are your field labels, renders one card per row with the same renderer as a single download, and zips them. A row whose photo link won't load fails loudly instead of shipping a card with an empty circle, and the progress also shows in the editor's top bar.",
+      },
+      {
+        type: "loop",
+        src: "/work/fillyr/bulk-loop.mp4",
+        poster: "/work/fillyr/bulk-loop.jpg",
+        label:
+          "Bulk Fill: a CSV of six names becomes six previewed cards, then one ZIP",
+        caption: "Six names in, six cards previewed, one ZIP out.",
+      },
+      {
+        type: "text",
+        body: "It's free while it finds its shape.",
+        link: { label: "Make a flyer", href: "https://fillyr.app" },
       },
     ],
   },

@@ -13,7 +13,10 @@ export const sheetStates = [
   { src: "/details/bb-sheet-open.png", caption: "01 waiting for an address" },
   { src: "/details/bb-sheet-checking.png", caption: "02 checking" },
   { src: "/details/bb-sheet-failed.png", caption: "03 nothing answered" },
-  { src: "/details/bb-sheet-above-keyboard.png", caption: "04 rides the keyboard" },
+  {
+    src: "/details/bb-sheet-above-keyboard.png",
+    caption: "04 rides the keyboard",
+  },
 ];
 
 export const marks: Mark[] = [
