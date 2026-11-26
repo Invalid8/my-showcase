@@ -517,8 +517,8 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "loop",
-        src: "/work/fillyr/sample-loop.mp4",
-        poster: "/work/fillyr/sample-loop.jpg",
+        src: "/work/fillyr/sample-v2.mp4",
+        poster: "/work/fillyr/sample-v2.jpg",
         label:
           "The Fillyr editor: sampling gold from the flyer's ring for the name, then centring and bolding it",
         caption:
@@ -531,8 +531,8 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "loop",
-        src: "/work/fillyr/fit-loop.mp4",
-        poster: "/work/fillyr/fit-loop.jpg",
+        src: "/work/fillyr/fit-v2.mp4",
+        poster: "/work/fillyr/fit-v2.jpg",
         label:
           "The public fill page: typing a short name, then a long one that shrinks to fit the bar",
         caption: "A short name, then a long one, on the public fill page.",
@@ -563,8 +563,8 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "loop",
-        src: "/work/fillyr/bulk-loop.mp4",
-        poster: "/work/fillyr/bulk-loop.jpg",
+        src: "/work/fillyr/bulk-v3.mp4",
+        poster: "/work/fillyr/bulk-v3.jpg",
         label:
           "Bulk Fill: a CSV of six names becomes six previewed cards, then one ZIP",
         caption: "Six names in, six cards previewed, one ZIP out.",
