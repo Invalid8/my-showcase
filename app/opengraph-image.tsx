@@ -1,10 +1,13 @@
 import { ImageResponse } from "next/og";
-import { person } from "@/content/home";
+import { mottos, person } from "@/content/home";
 import { Ascii, desertLines, OgFrame, og, ogFonts, ogSize } from "@/lib/og";
 
 export const alt = `${person.name}, ${person.role}`;
 export const size = ogSize;
 export const contentType = "image/png";
+export const revalidate = 86400;
+
+const DAY = 86_400_000;
 
 export default async function OpengraphImage() {
   return new ImageResponse(
@@ -28,11 +31,11 @@ export default async function OpengraphImage() {
           display: "flex",
           fontFamily: "Serif",
           fontStyle: "italic",
-          fontSize: 50,
+          fontSize: 46,
           marginTop: 24,
         }}
       >
-        Mostly tools I wanted to exist.
+        {mottos[Math.floor(Date.now() / DAY) % mottos.length]}
       </div>
     </OgFrame>,
     { ...size, fonts: await ogFonts() },

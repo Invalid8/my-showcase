@@ -17,12 +17,12 @@ export function DesertBand({ className }: { className?: string }) {
     const stage = ref.current;
     if (!stage) return;
     let cleanup = () => {};
+    let fit = () => {};
 
-    const build = (replay: boolean) => {
-      cleanup();
-      stage.replaceChildren();
+    const start = () => {
       const m = metrics(SIZE);
-      const desert = new Desert(Math.floor(stage.clientWidth / m.w), m);
+      const cols = () => Math.floor(stage.clientWidth / m.w);
+      const desert = new Desert(cols(), m);
       const now = performance.now();
       const scene = new Piece(stage, {
         lines: desert.render(now),
@@ -30,17 +30,25 @@ export function DesertBand({ className }: { className?: string }) {
         className: "scene",
         radius: 52,
       });
-      scene.place(stage.clientWidth - scene.width, 0);
+      fit = () => {
+        desert.resize(cols());
+        scene.setLines(desert.render(performance.now()));
+        scene.place(stage.clientWidth - scene.width, 0);
+      };
+      fit();
 
       if (prefersReducedMotion()) {
-        scene.settle();
         scene.draw(now, { x: FAR, y: FAR });
-        cleanup = () => {};
+        fit = () => {
+          desert.resize(cols());
+          scene.setLines(desert.render(0));
+          scene.place(stage.clientWidth - scene.width, 0);
+          scene.draw(0, { x: FAR, y: FAR });
+        };
         return;
       }
 
-      if (replay) scene.reveal(now, 1400);
-      else scene.settle();
+      scene.reveal(now, 1400);
       const { pointer, release } = trackPointer(stage);
       let lastText = 0;
       const unsubscribe = subscribe((t, dt) => {
@@ -59,18 +67,20 @@ export function DesertBand({ className }: { className?: string }) {
       };
     };
 
-    let width = 0;
+    let started = false;
     const observer = new ResizeObserver(() => {
-      if (stage.clientWidth === width) return;
-      const replay = width === 0;
-      width = stage.clientWidth;
-      build(replay);
+      if (started) fit();
+      else {
+        started = true;
+        start();
+      }
     });
     document.fonts.ready.then(() => observer.observe(stage));
 
     return () => {
       observer.disconnect();
       cleanup();
+      stage.replaceChildren();
     };
   }, []);
 

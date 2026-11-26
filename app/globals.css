@@ -1490,3 +1490,7 @@ button.heart {
     monospace;
   color: var(--text-faint);
 }
+
+.home[data-intro="on"] main > section:first-child {
+  transform: none;
+}

@@ -40,10 +40,24 @@ function pickMotto(count: number) {
   return index;
 }
 
-function offsetWithin(el: Element, root: Element) {
-  const a = el.getBoundingClientRect();
-  const b = root.getBoundingClientRect();
-  return { x: a.left - b.left, y: a.top - b.top };
+function offsetWithin(el: HTMLElement, root: HTMLElement) {
+  let x = 0;
+  let y = 0;
+  let node: HTMLElement | null = el;
+  while (node && node !== root) {
+    x += node.offsetLeft;
+    y += node.offsetTop;
+    node = node.offsetParent as HTMLElement | null;
+  }
+  return { x, y };
+}
+
+function sceneCols(W: number, w: number) {
+  return W < MOBILE ? Math.ceil(W / w) : Math.floor(Math.min(640, W - 48) / w);
+}
+
+function sceneLeft(W: number, width: number) {
+  return W < MOBILE ? W - width : (W - width) / 2;
 }
 
 export function HomeAscii({ mottos }: { mottos: string[] }) {
@@ -58,6 +72,8 @@ export function HomeAscii({ mottos }: { mottos: string[] }) {
     const reduced = prefersReducedMotion();
     const line = mottos[pickMotto(mottos.length)];
     let cleanup = () => {};
+    let desert: Desert | null = null;
+    let morph = (_W: number) => {};
 
     const build = (playIntro: boolean) => {
       cleanup();
@@ -70,25 +86,31 @@ export function HomeAscii({ mottos }: { mottos: string[] }) {
       const colW = Math.min(640, W - 48);
       const colLeft = (W - colW) / 2;
       const m = metrics(SCENE_SIZE);
-      const desert = new Desert(
-        mobile ? Math.ceil(W / m.w) : Math.floor(colW / m.w),
-        m,
-      );
+      desert ??= new Desert(sceneCols(W, m.w), m);
+      desert.resize(sceneCols(W, m.w));
+      const scape = desert;
       const now = performance.now();
       const scene = new Piece(stage, {
-        lines: desert.render(now),
+        lines: scape.render(now),
         size: SCENE_SIZE,
         className: "scene",
         radius: 52,
       });
-      const sceneX = mobile ? W - scene.width : (W - scene.width) / 2;
-      const GAP = mobile ? 0 : 72;
+      let sceneX = sceneLeft(W, scene.width);
+      let GAP = mobile ? 0 : 72;
+      morph = (width: number) => {
+        scape.resize(sceneCols(width, m.w));
+        scene.setLines(scape.render(performance.now()));
+        sceneX = sceneLeft(width, scene.width);
+        GAP = width < MOBILE ? 0 : 72;
+        if (landed) scene.place(sceneX, GAP);
+      };
       const layer = document.createElement("div");
       layer.className = "ascii-layer";
       stage.append(layer);
       const pieces = [scene];
       const top = (selector: string) => {
-        const el = home.querySelector(selector);
+        const el = home.querySelector<HTMLElement>(selector);
         return el ? offsetWithin(el, home).y : 0;
       };
 
@@ -224,7 +246,7 @@ export function HomeAscii({ mottos }: { mottos: string[] }) {
         }
 
         const band = visibleBand(stage);
-        desert.step(t, dt, pointer, scene);
+        scape.step(t, dt, pointer, scene);
         loud += ((hovering ? 1 : 0) - loud) * 0.06;
         if (turntable && t - lastSpin > TURNTABLE_FRAME_MS) {
           frame = (frame + 1) % TURNTABLE_FRAMES.length;
@@ -250,7 +272,7 @@ export function HomeAscii({ mottos }: { mottos: string[] }) {
           nextNote = t + 1600 + Math.random() * 1400;
         }
         if (t - lastText > 33) {
-          scene.setLines(desert.render(t));
+          scene.setLines(scape.render(t));
           if (wave) wave.setLines(waveform(t, loud));
           for (const p of pieces) {
             if (p.y > band.bottom || p.y + p.height < band.top) continue;
@@ -283,7 +305,10 @@ export function HomeAscii({ mottos }: { mottos: string[] }) {
       width = home.clientWidth;
       clearTimeout(timer);
       if (first) build(firstIntro);
-      else timer = window.setTimeout(() => build(false), 250);
+      else {
+        morph(width);
+        timer = window.setTimeout(() => build(false), 250);
+      }
     });
     document.fonts.ready.then(() => observer.observe(home));
 

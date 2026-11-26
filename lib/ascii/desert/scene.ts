@@ -40,14 +40,6 @@ const FLOCK = [
 
 type Grid = string[][];
 
-function seeded(seed: number) {
-  let s = seed;
-  return () => {
-    s = (s * 16807) % 2147483647;
-    return s / 2147483647;
-  };
-}
-
 function heightChar(frac: number, slope: number) {
   if (slope > 0.9) return "\\";
   if (slope < -0.9) return "/";
@@ -74,9 +66,16 @@ const widthOf = (lines: string[]) => Math.max(...lines.map((l) => l.length));
 
 type Cactus = { sprite: SpriteName; col: number; bloom: number };
 
+function sky(r: number, c: number) {
+  const h = Math.sin(r * 127.1 + c * 311.7) * 43758.5453;
+  const k = h - Math.floor(h);
+  return k < 0.07 ? SKY[Math.floor((k / 0.07) * SKY.length)] : " ";
+}
+
 export class Desert {
-  private readonly texture: string[][];
-  private readonly cacti: Cactus[];
+  cols = 0;
+  private texture: string[][] = [];
+  private cacti: Cactus[] = [];
   private readonly clouds = [
     { x: 0, row: 2, speed: 0.0006 },
     { x: 0, row: 5, speed: 0.0004 },
@@ -92,23 +91,39 @@ export class Desert {
   private readonly snake = { x: 0, speed: -0.0015, tongue: false };
 
   constructor(
-    readonly cols: number,
+    cols: number,
     private readonly m: Metrics,
   ) {
-    const r = seeded(42);
-    this.texture = Array.from({ length: DESERT_ROWS }, () =>
-      Array.from({ length: cols }, () =>
-        r() < 0.07 ? SKY[Math.floor(r() * SKY.length)] : " ",
-      ),
-    );
-    this.cacti = [
-      { sprite: "cactus_big", col: Math.round(cols * 0.08), bloom: 0 },
-      { sprite: "cactus_small", col: Math.round(cols * 0.72), bloom: 0 },
-      { sprite: "cactus_small", col: Math.round(cols * 0.9), bloom: 0 },
-    ];
+    this.resize(cols);
     this.clouds[0].x = cols * 0.3;
     this.clouds[1].x = cols * 0.66;
     this.snake.x = cols * 0.35;
+  }
+
+  resize(cols: number) {
+    if (cols === this.cols) return;
+    const blooms = this.cacti.map((c) => c.bloom);
+    this.cols = cols;
+    this.texture = Array.from({ length: DESERT_ROWS }, (_, r) =>
+      Array.from({ length: cols }, (_, c) => sky(r, c)),
+    );
+    this.cacti = [
+      {
+        sprite: "cactus_big",
+        col: Math.round(cols * 0.08),
+        bloom: blooms[0] ?? 0,
+      },
+      {
+        sprite: "cactus_small",
+        col: Math.round(cols * 0.72),
+        bloom: blooms[1] ?? 0,
+      },
+      {
+        sprite: "cactus_small",
+        col: Math.round(cols * 0.9),
+        bloom: blooms[2] ?? 0,
+      },
+    ];
   }
 
   private near(x: number) {
