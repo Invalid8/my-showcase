@@ -91,10 +91,10 @@ export const caseStudies: CaseStudy[] = [
         type: "image",
         wide: true,
         image: {
-          src: "/work/vscrybe/note-playing.png",
+          src: "/work/vscrybe/note-live-line.png",
           alt: "A transcribed note playing from 0:18, with that line highlighted",
-          width: 1672,
-          height: 954,
+          width: 1696,
+          height: 946,
         },
         caption: "Clicked 0:18. The line stays lit while it plays.",
       },
@@ -107,10 +107,10 @@ export const caseStudies: CaseStudy[] = [
         type: "image",
         wide: true,
         image: {
-          src: "/work/vscrybe/tray-preview.png",
+          src: "/work/vscrybe/tray-waiting.png",
           alt: "Two files waiting in the tray above the composer, the first playing as a preview",
-          width: 1656,
-          height: 316,
+          width: 1654,
+          height: 314,
         },
         caption:
           "Two waiting, the first playing as a preview. Both are still here after a restart.",
