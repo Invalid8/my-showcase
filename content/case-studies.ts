@@ -27,7 +27,8 @@ export type Block =
   | { type: "code"; file: string; lang: string; code: string; caption?: string }
   | { type: "terminal"; lines: string[] }
   | { type: "list"; heading?: string; items: { title: string; body: string }[] }
-  | { type: "quote"; text: string; source: string };
+  | { type: "quote"; text: string; source: string }
+  | { type: "demo"; id: string; caption: string; wide?: boolean };
 
 export type CaseStudy = {
   slug: string;

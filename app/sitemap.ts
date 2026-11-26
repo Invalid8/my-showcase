@@ -45,14 +45,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     })),
     { url: absoluteUrl("/resume"), changeFrequency: "monthly", priority: 0.8 },
-    { url: absoluteUrl("/details"), changeFrequency: "monthly", priority: 0.6 },
     { url: absoluteUrl("/crafts"), changeFrequency: "monthly", priority: 0.6 },
-    ...crafts
-      .filter((craft) => craft.href.startsWith("/"))
-      .map((craft) => ({
-        url: absoluteUrl(craft.href),
-        changeFrequency: "yearly" as const,
-        priority: 0.4,
-      })),
+    ...crafts.map((craft) => ({
+      url: absoluteUrl(`/crafts/${craft.slug}`),
+      changeFrequency: "yearly" as const,
+      priority: 0.4,
+    })),
   ];
 }

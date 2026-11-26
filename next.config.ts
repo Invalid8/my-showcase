@@ -12,6 +12,14 @@ const nextConfig: NextConfig = {
         destination: "/crafts/record-player",
         permanent: true,
       },
+      { source: "/details", destination: "/crafts", permanent: true },
+      ...["desert", "rope", "ascii-record-player", "characters-not-pixels"].map(
+        (slug) => ({
+          source: `/crafts/${slug}`,
+          destination: "/crafts/ascii",
+          permanent: true,
+        }),
+      ),
     ];
   },
   async headers() {

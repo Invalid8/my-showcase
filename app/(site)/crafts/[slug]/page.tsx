@@ -1,29 +1,26 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 import { DesertBand } from "@/components/ascii/DesertBand";
 import { MottoDemo } from "@/components/ascii/MottoDemo";
 import { RopeDemo } from "@/components/ascii/RopeDemo";
 import { SpinningTurntable } from "@/components/ascii/SpinningTurntable";
+import { Blocks } from "@/components/blocks/Blocks";
+import { ZoomImage } from "@/components/blocks/ZoomImage";
 import MusicPlayer from "@/components/shared/MusicPlayer";
 import { getPlaylist } from "@/components/shared/MusicPlayer/playlist";
 import { Adjacent } from "@/components/site/Adjacent";
-import { NumberedList } from "@/components/site/NumberedList";
+import { HeartBurst } from "@/components/site/HeartBurst";
 import { PageHead } from "@/components/site/PageHead";
-import { Section } from "@/components/site/Section";
-import { craftNumber, crafts } from "@/content/crafts";
+import { craftNumber, crafts, drawerStates } from "@/content/crafts";
 import { mottos } from "@/content/home";
-import { ART } from "@/lib/ascii/art";
-import { TURNTABLE_FRAMES } from "@/lib/ascii/turntable";
-import { waveform } from "@/lib/ascii/waveform";
 import { createPageMetadata } from "@/lib/seo";
 import { PLAYLIST_ID, playlist } from "@/utils/constants";
 
 export const revalidate = 900;
 
-const local = crafts.filter((craft) => craft.href.startsWith("/"));
-
 export function generateStaticParams() {
-  return local.map((craft) => ({ slug: craft.slug }));
+  return crafts.map((craft) => ({ slug: craft.slug }));
 }
 
 export const dynamicParams = false;
@@ -32,62 +29,13 @@ export async function generateMetadata({
   params,
 }: PageProps<"/crafts/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const craft = local.find((entry) => entry.slug === slug);
+  const craft = crafts.find((entry) => entry.slug === slug);
   if (!craft) return {};
   return createPageMetadata({
     title: craft.title,
     description: craft.blurb,
-    path: craft.href,
+    path: `/crafts/${slug}`,
   });
-}
-
-const SPECIMENS = [
-  { name: "Turntable", lines: TURNTABLE_FRAMES[0], size: "text-[6px]" },
-  { name: "Fillyr page and pen", lines: ART.fillyr, size: "text-[10px]" },
-  { name: "VScrybe waveform", lines: waveform(1200, 0.6), size: "text-[12px]" },
-];
-
-function Specimens() {
-  return (
-    <div className="demo-stage grid gap-8 p-6 sm:grid-cols-[auto_auto] sm:justify-around">
-      {SPECIMENS.map(({ name, lines, size }) => (
-        <pre
-          key={name}
-          className={`ascii static ${size}`}
-          role="img"
-          aria-label={name}
-        >
-          {lines.join("\n")}
-        </pre>
-      ))}
-    </div>
-  );
-}
-
-async function Demo({ slug }: { slug: string }) {
-  switch (slug) {
-    case "record-player":
-      return (
-        <div className="bleed">
-          <MusicPlayer
-            source={await getPlaylist(PLAYLIST_ID, playlist)}
-            showIntro={false}
-          />
-        </div>
-      );
-    case "desert":
-      return <DesertBand />;
-    case "characters-not-pixels":
-      return <Specimens />;
-    case "rope":
-      return <RopeDemo />;
-    case "motto":
-      return <MottoDemo lines={mottos} />;
-    case "ascii-record-player":
-      return <SpinningTurntable />;
-    default:
-      return null;
-  }
 }
 
 export default async function CraftPage({
@@ -96,9 +44,43 @@ export default async function CraftPage({
   const { slug } = await params;
   const index = crafts.findIndex((craft) => craft.slug === slug);
   const craft = crafts[index];
-  if (!craft || !craft.href.startsWith("/")) notFound();
+  if (!craft) notFound();
   const previous = crafts[index - 1];
   const next = crafts[index + 1];
+  const demos: Record<string, ReactNode> = {
+    "record-player": slug === "record-player" && (
+      <MusicPlayer
+        source={await getPlaylist(PLAYLIST_ID, playlist)}
+        showIntro={false}
+      />
+    ),
+    desert: <DesertBand />,
+    rope: <RopeDemo />,
+    turntable: <SpinningTurntable />,
+    motto: <MottoDemo lines={mottos} />,
+    drawer: (
+      <div className="states">
+        {drawerStates.map((state) => (
+          <figure key={state.src}>
+            <ZoomImage
+              src={state.src}
+              alt={`Baseband address drawer: ${state.caption.slice(3)}`}
+              width={540}
+              height={1170}
+            />
+            <figcaption>{state.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+    ),
+    heart: (
+      <div className="heart-demo">
+        <span>
+          Built with <HeartBurst />
+        </span>
+      </div>
+    ),
+  };
 
   return (
     <article>
@@ -108,26 +90,18 @@ export default async function CraftPage({
         subtitle={`Craft ${craftNumber(slug)} · ${[craft.tags[0], ...craft.tags.slice(1).map((tag) => tag.toLowerCase())].join(", ")}`}
         line={craft.line}
       >
-        {craft.intro && <p className="lede">{craft.intro}</p>}
+        <p className="lede">{craft.intro}</p>
       </PageHead>
-      <div className="section">
-        <Demo slug={slug} />
-      </div>
-      {craft.made && (
-        <Section id="made" label="How it's made">
-          <NumberedList
-            items={craft.made.map((item) => ({
-              key: item.title,
-              title: item.title,
-              body: item.body,
-            }))}
-          />
-        </Section>
-      )}
+      <Blocks blocks={craft.blocks} demos={demos} />
       <Adjacent
         label="More crafts"
-        previous={previous && { href: previous.href, title: previous.title }}
-        next={next && { href: next.href, title: next.title }}
+        previous={
+          previous && {
+            href: `/crafts/${previous.slug}`,
+            title: previous.title,
+          }
+        }
+        next={next && { href: `/crafts/${next.slug}`, title: next.title }}
       />
     </article>
   );

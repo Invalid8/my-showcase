@@ -29,7 +29,13 @@ function Figure({
   );
 }
 
-export function Blocks({ blocks }: { blocks: Block[] }) {
+export function Blocks({
+  blocks,
+  demos = {},
+}: {
+  blocks: Block[];
+  demos?: Record<string, React.ReactNode>;
+}) {
   let fig = 0;
   const lead = blocks.findIndex((block) => block.type === "image");
 
@@ -161,6 +167,13 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
               }))}
             />
           </Section>
+        );
+      case "demo":
+        fig++;
+        return (
+          <Figure key={key} n={fig} caption={block.caption} wide={block.wide}>
+            {demos[block.id]}
+          </Figure>
         );
       case "quote":
         return (
