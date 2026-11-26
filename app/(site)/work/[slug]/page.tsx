@@ -74,7 +74,7 @@ export default async function CaseStudyPage({
         </dl>
       </header>
       <Blocks blocks={study.blocks} />
-      <nav aria-label="Next project" className="adjacent">
+      <nav aria-label="Next project" className="next-project">
         <span className="faint">Next</span>
         <span>
           <Image

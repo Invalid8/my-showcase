@@ -4,6 +4,12 @@ export type Block =
   | { type: "text"; heading?: string; body: string; note?: string }
   | { type: "image"; image: Img; caption: string; wide?: boolean }
   | { type: "pair"; images: [Img, Img]; caption: string }
+  | {
+      type: "states";
+      columns: number;
+      items: { image: Img; caption: string }[];
+      caption?: string;
+    }
   | { type: "code"; file: string; lang: string; code: string; caption?: string }
   | { type: "terminal"; lines: string[] }
   | { type: "list"; heading?: string; items: { title: string; body: string }[] }
@@ -19,16 +25,18 @@ export type CaseStudy = {
   blocks: Block[];
 };
 
-const vscrybeCode = `fn builtins() -> Vec<Model> {
-    vec![
-        builtin("small", "Fast", &[
-            ("Systran/faster-whisper-small", "model.bin"), …
-        ]),
-        builtin("large-v3-turbo", "Accurate", &[
-            ("dropbox-dash/faster-whisper-large-v3-turbo", "model.bin"), …
-        ]),
-    ]
-}`;
+const vscrybeCode = `const SHORT_BURST: usize = RATE * 3 / 2;
+
+const PHANTOMS: &[(&str, &[&str])] = &[(
+    "en",
+    &["you", "thank you", "thank you very much", "thanks",
+      "thanks for watching", "thank you for watching", "shh", "shhh"],
+)];
+…
+let doubtful = attempt.no_speech_prob > NO_SPEECH_LIMIT
+    || chunk.len() < SHORT_BURST;
+found.retain(|s| s.text.chars().any(char::is_alphanumeric)
+    && !(doubtful && is_phantom(&s.text, &language)));`;
 
 export const caseStudies: CaseStudy[] = [
   {
@@ -58,82 +66,83 @@ export const caseStudies: CaseStudy[] = [
         wide: true,
         image: {
           src: "/work/vscrybe-dark.png",
-          alt: "A VScrybe session with WhatsApp voice notes, their transcripts and timestamps",
+          alt: "A VScrybe session with voice notes, their transcripts and timestamps",
           width: 2560,
           height: 1600,
         },
+        caption: "A session of voice notes, transcribed on a laptop, offline.",
+      },
+      {
+        type: "text",
+        body: "Half my conversations arrive as WhatsApp voice notes. I wanted to search them, quote them and skim them without sending anyone's voice to a server I don't control. VScrybe runs Whisper on your own computer. These are four of the small parts.",
+      },
+      {
+        type: "text",
+        heading: "A timestamp you can click",
+        body: "Every line starts with the second it was said. Click it and the note plays from there, and the line being spoken stays lit while it plays. Starting one note pauses every other. You can listen while a note is still transcribing, and when the text arrives and the card redraws, playback carries on from the same second instead of stopping.",
+      },
+      {
+        type: "image",
+        wide: true,
+        image: {
+          src: "/work/vscrybe/note-playing.png",
+          alt: "A transcribed note playing from 0:18, with that line highlighted",
+          width: 1672,
+          height: 954,
+        },
+        caption: "Clicked 0:18. The line stays lit while it plays.",
+      },
+      {
+        type: "text",
+        heading: "Nothing starts until you press Send",
+        body: "Files you add wait in a tray above the composer until you press Send. Listen to one first, remove it, or add the same file twice and be told it's already there. The tray lives in the browser's IndexedDB, so it's still there after a restart. I dropped the \"Adding N voice notes\" overlay: the copies are local and finish almost at once, so it only flashed on screen.",
+      },
+      {
+        type: "image",
+        wide: true,
+        image: {
+          src: "/work/vscrybe/tray.png",
+          alt: "Two files waiting in the tray above the composer, the first playing as a preview",
+          width: 1640,
+          height: 232,
+        },
         caption:
-          "A session of WhatsApp voice notes, transcribed on a laptop, offline.",
+          "Two waiting, the first playing as a preview. Both are still here after a restart.",
       },
       {
         type: "text",
-        heading: "Why I built it",
-        body: "Half my conversations arrive as WhatsApp voice notes. I wanted to search them, quote them and skim them, without sending anyone's voice to a server I don't control.",
-      },
-      {
-        type: "text",
-        heading: "Two models, named by what they're for",
-        body: "Fast (Whisper small) suits most voice notes; Accurate (large-v3-turbo) handles heavy accents and noise. You pick an outcome, not a model size.",
-        note: "The first transcription downloads the Fast model, about 480 MB. After that it works offline.",
-      },
-      {
-        type: "list",
-        heading: "Decisions",
-        items: [
-          {
-            title: "Sessions, not files",
-            body: "Every batch of notes becomes a thread you can rename, search and add to. Each line keeps its timestamp, and clicking it plays that exact moment.",
-          },
-          {
-            title: "Say what isn't done yet",
-            body: "The site says plainly that the app isn't code-signed yet, and shows how to open it anyway.",
-          },
-        ],
+        heading: "Lines Whisper made up",
+        body: 'Whisper invents text when there\'s little to hear: "Thank you.", "You" and "Shh." turned up as lines in quiet and noisy stretches. Filtering those phrases everywhere would delete real thanks, so they\'re only dropped when the model already doubts there\'s speech, or the burst is under a second and a half. Lines with no words at all, a lone ".", go too.',
       },
       {
         type: "code",
-        file: "src-tauri/src/engine/models.rs",
+        file: "src-tauri/src/engine/transcribe.rs",
         lang: "rust",
         code: vscrybeCode,
         caption: "Excerpt, trimmed with …",
       },
       {
-        type: "terminal",
-        lines: [
-          "$ vscrybe transcribe ~/Voice\\ Notes",
-          "...   ~/Voice Notes/WhatsApp Ptt …09.44.02.opus",
-          "done  ~/Voice Notes/WhatsApp Ptt …09.44.02.txt",
-          "skip  ~/Voice Notes/WhatsApp Ptt …10.02.55.opus  (already has a .txt)",
-        ],
-      },
-      {
-        type: "pair",
-        images: [
-          {
-            src: "/work/vscrybe-dark.png",
-            alt: "VScrybe in dark mode",
-            width: 2560,
-            height: 1600,
-          },
-          {
-            src: "/work/vscrybe-light.png",
-            alt: "VScrybe in light mode",
-            width: 2560,
-            height: 1600,
-          },
-        ],
-        caption:
-          "The same session in dark and light. The app follows the system theme.",
-      },
-      {
-        type: "quote",
-        text: "Drop in WhatsApp, Telegram or phone recordings and get clean, searchable text in about the time it takes to play them.",
-        source: "from the VScrybe site",
+        type: "text",
+        body: "The bigger loss was silent. When Whisper ended a 30-second window after its first sentence, the rest was thrown away; one test note lost 19 seconds. Decoding now resumes from the last timestamp, retries low-confidence output at rising temperatures and discards repetition loops. Every encoding of the same note now gives 144 to 150 words, where it gave 99 to 136.",
       },
       {
         type: "text",
-        heading: "Since",
-        body: "It understands Yoruba, Hausa and Swahili as well as English, opens every format WhatsApp and phones throw at it, and ships for Linux, macOS and Windows.",
+        heading: "Progress that knows where it's printing",
+        body: "The command line rewrites one line in place when it's in a terminal, with an estimate of time left. Piped into a log, that would be thousands of carriage returns, so it prints a plain line every 10% or every 30 seconds instead, and ends each file with how long the audio was and how long it took.",
+      },
+      {
+        type: "terminal",
+        lines: [
+          "$ vscrybe transcribe jfk.opus long1.opus 2>&1 | cat",
+          "...   jfk.opus",
+          "      100%  0:11 / 0:11  jfk.opus",
+          "done  jfk.txt  0:11 of audio in 0:09 (1.2× real time)",
+          "...   long1.opus",
+          "        0%  0:00 / 0:33  long1.opus",
+          "       66%  0:22 / 0:33  long1.opus",
+          "      100%  0:33 / 0:33  long1.opus",
+          "done  long1.txt  0:33 of audio in 1:00 (0.5× real time)",
+        ],
       },
     ],
   },
