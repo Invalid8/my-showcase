@@ -1290,8 +1290,8 @@ a.chip:hover::after {
   margin-bottom: 32px;
 }
 
-.section-intro .link-group {
-  white-space: nowrap;
+.site p.read-all {
+  margin-top: 28px;
 }
 
 .spark {

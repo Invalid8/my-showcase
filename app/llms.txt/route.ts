@@ -1,52 +1,46 @@
-import {
-  getPortfolioFeedItems,
-  getPortfolioProjects,
-} from "@/lib/portfolio-data";
-import { absoluteUrl, siteConfig, summarize } from "@/lib/seo";
-import { capabilities, socials } from "@/utils/constants";
+import { caseStudies } from "@/content/case-studies";
+import { contacts, intro, person } from "@/content/home";
+import { getPortfolioFeedItems } from "@/lib/portfolio-data";
+import { absoluteUrl, summarize } from "@/lib/seo";
 
 export const revalidate = 900;
 
 export async function GET() {
-  const [projects, feedItems] = await Promise.all([
-    getPortfolioProjects(),
-    getPortfolioFeedItems(),
-  ]);
+  const feedItems = await getPortfolioFeedItems();
 
   const lines = [
-    `# ${siteConfig.name}`,
+    `# ${person.name}`,
     "",
-    `> ${siteConfig.description}`,
+    `> ${person.role}. ${intro}`,
     "",
     "## Pages",
     "",
-    `- [Home](${absoluteUrl("/")}): Introduction, selected work, approach and capabilities`,
-    `- [Feed](${absoluteUrl("/feed")}): Notes on interface engineering, CSS, motion, and the details behind the work`,
+    `- [Home](${absoluteUrl("/")}): Introduction, tools, work, writing and how to get in touch`,
+    `- [Writing](${absoluteUrl("/writing")}): Notes on interface engineering, CSS, motion and the details behind the work`,
+    `- [Details](${absoluteUrl("/details")}): Interaction, UI and brand decisions from shipped work`,
+    `- [Crafts](${absoluteUrl("/crafts")}): Interface and interaction studies, one page each`,
+    `- [Résumé](${absoluteUrl("/resume")}): Experience, projects and skills, also as a PDF at ${absoluteUrl("/resume.pdf")}`,
     "",
-    "## Selected work",
+    "## Case studies",
     "",
-    ...projects.map(
-      (project) =>
-        `- [${project.name}](${project.href}): ${summarize(project.description || project.descriptor, 240)}`,
+    ...caseStudies.map(
+      (study) =>
+        `- [${study.name}](${absoluteUrl(`/work/${study.slug}`)}): ${study.line}`,
     ),
     "",
-    "## Feed",
+    "## Writing",
     "",
     ...feedItems.map(
       (item) =>
         `- [${item.title}](${absoluteUrl(item.href)}): ${summarize(item.description, 240)}`,
     ),
     "",
-    "## Capabilities",
-    "",
-    ...capabilities.map(
-      (capability) => `- ${capability.title}: ${capability.description}`,
-    ),
-    "",
     "## Elsewhere",
     "",
-    ...socials.map((social) => `- [${social.name}](${social.href})`),
-    `- [Email](mailto:${siteConfig.email})`,
+    ...contacts
+      .filter((contact) => contact.href.startsWith("http"))
+      .map((contact) => `- [${contact.label}](${contact.href})`),
+    `- [Email](mailto:${person.email})`,
   ];
 
   return new Response(`${lines.join("\n")}\n`, {

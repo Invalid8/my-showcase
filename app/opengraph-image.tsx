@@ -1,71 +1,40 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { ImageResponse } from "next/og";
-import { siteConfig } from "@/lib/seo";
+import { person } from "@/content/home";
+import { Ascii, desertLines, OgFrame, og, ogFonts, ogSize } from "@/lib/og";
 
-export const alt = `${siteConfig.name}, Frontend Engineer`;
-export const size = { width: 1200, height: 630 };
+export const alt = `${person.name}, ${person.role}`;
+export const size = ogSize;
 export const contentType = "image/png";
 
 export default async function OpengraphImage() {
-  const [regular, bold] = await Promise.all([
-    readFile(join(process.cwd(), "assets/fonts/inter-latin-400-normal.woff")),
-    readFile(join(process.cwd(), "assets/fonts/inter-latin-700-normal.woff")),
-  ]);
-
   return new ImageResponse(
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        background: "linear-gradient(160deg, #0A0A0A 0%, #141414 100%)",
-        padding: 72,
-        color: "#FAFAFA",
-        fontFamily: "Inter",
-      }}
-    >
+    <OgFrame footer={<span />}>
+      <div style={{ display: "flex", position: "absolute", top: 28, left: 80 }}>
+        <Ascii lines={desertLines(144).slice(0, 22)} size={12} />
+      </div>
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
-          fontSize: 22,
-          letterSpacing: 3,
-          textTransform: "uppercase",
-          color: "#8A8A8A",
+          flexDirection: "column",
+          fontSize: 28,
+          lineHeight: 1.35,
         }}
       >
-        <span>{siteConfig.name}</span>
-        <span>Frontend Engineer</span>
+        <span>{person.name}</span>
+        <span style={{ color: og.muted }}>{person.role}</span>
       </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-        <div
-          style={{
-            display: "flex",
-            fontSize: 72,
-            fontWeight: 700,
-            lineHeight: 1.05,
-            letterSpacing: -2,
-            maxWidth: 900,
-          }}
-        >
-          I build thoughtful interfaces for products people actually use.
-        </div>
+      <div
+        style={{
+          display: "flex",
+          fontFamily: "Serif",
+          fontStyle: "italic",
+          fontSize: 50,
+          marginTop: 24,
+        }}
+      >
+        Mostly tools I wanted to exist.
       </div>
-
-      <div style={{ display: "flex", fontSize: 24, color: "#A0A0A0" }}>
-        {siteConfig.url.replace(/^https?:\/\//, "")}
-      </div>
-    </div>,
-    {
-      ...size,
-      fonts: [
-        { name: "Inter", data: regular, weight: 400, style: "normal" },
-        { name: "Inter", data: bold, weight: 700, style: "normal" },
-      ],
-    },
+    </OgFrame>,
+    { ...size, fonts: await ogFonts() },
   );
 }

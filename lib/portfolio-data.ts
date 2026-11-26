@@ -3,28 +3,7 @@ import "server-only";
 import { unstable_cache } from "next/cache";
 import { Pool } from "pg";
 import { cache } from "react";
-import {
-  feedItems as fallbackFeedItems,
-  projects as fallbackProjects,
-} from "@/utils/constants";
-
-export type Project = {
-  name: string;
-  descriptor: string;
-  description: string;
-  image: string;
-  href: string;
-};
-
-type ProjectRow = {
-  id: string;
-  title: string | null;
-  description: string | null;
-  thumbnail: string | null;
-  link: string | null;
-  tags: string[] | null;
-  order: number | null;
-};
+import { feedItems as fallbackFeedItems } from "@/utils/constants";
 
 type FeedRow = {
   id: string;
@@ -121,16 +100,6 @@ function isoDate(value: string | Date | null | undefined) {
   return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
 }
 
-function mapProject(row: ProjectRow): Project {
-  return {
-    name: row.title?.trim() || "Untitled project",
-    descriptor: tags(row.tags).join(" · "),
-    description: row.description?.trim() || "",
-    image: row.thumbnail || "/work/fillyr.webp",
-    href: row.link || "#",
-  };
-}
-
 function mapFeedItem(row: FeedRow): PortfolioFeedItem | null {
   const slug = row.slug?.trim();
   if (!slug) return null;
@@ -150,21 +119,6 @@ function mapFeedItem(row: FeedRow): PortfolioFeedItem | null {
 }
 
 const REVALIDATE = 900;
-
-const loadProjects = unstable_cache(
-  async (): Promise<Project[]> => {
-    const rows = await query<ProjectRow>(`
-      SELECT id, title, description, thumbnail, link, tags, "order"
-      FROM projects
-      ORDER BY "order" ASC NULLS LAST, year DESC NULLS LAST
-    `);
-
-    if (!rows?.length) return fallbackProjects;
-    return rows.map(mapProject);
-  },
-  ["portfolio-projects"],
-  { revalidate: REVALIDATE, tags: ["portfolio-projects"] },
-);
 
 const loadFeedItems = unstable_cache(
   async (): Promise<PortfolioFeedItem[]> => {
@@ -189,8 +143,6 @@ const loadFeedItems = unstable_cache(
   ["portfolio-feed"],
   { revalidate: REVALIDATE, tags: ["portfolio-feed"] },
 );
-
-export const getPortfolioProjects = cache(loadProjects);
 
 export const getPortfolioFeedItems = cache(loadFeedItems);
 

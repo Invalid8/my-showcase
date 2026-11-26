@@ -33,7 +33,7 @@ type PageMetadata = {
   title: string;
   description: string;
   path: string;
-  image?: string;
+  image?: string | null;
   type?: "website" | "article";
   publishedTime?: string;
   modifiedTime?: string;
@@ -51,7 +51,9 @@ export function createPageMetadata({
   tags,
 }: PageMetadata): Metadata {
   const canonical = absoluteUrl(path);
-  const imageUrl = absoluteUrl(image);
+  const images = image
+    ? [{ url: absoluteUrl(image), width: 1200, height: 630, alt: title }]
+    : undefined;
   const socialTitle = title.includes(siteConfig.name)
     ? title
     : `${title} | ${siteConfig.name}`;
@@ -67,7 +69,7 @@ export function createPageMetadata({
       siteName: siteConfig.name,
       title: socialTitle,
       description,
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: socialTitle }],
+      ...(images && { images }),
       ...(type === "article"
         ? {
             publishedTime,
@@ -82,7 +84,7 @@ export function createPageMetadata({
       creator: siteConfig.twitter,
       title: socialTitle,
       description,
-      images: [imageUrl],
+      ...(images && { images: images.map((entry) => entry.url) }),
     },
   };
 }

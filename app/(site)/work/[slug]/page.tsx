@@ -24,6 +24,7 @@ export async function generateMetadata({
     description: study.line,
     path: `/work/${study.slug}`,
     type: "article",
+    image: null,
   });
 }
 

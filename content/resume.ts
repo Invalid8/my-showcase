@@ -64,7 +64,7 @@ export const resume = {
   ],
   education: {
     school: "Adekunle Ajasin University, Akungba-Akoko",
-    degree: "BSc Computer Science, minor in security",
+    degree: "BSc Computer Science",
     dates: "2023 – 2026",
   },
   contact: [

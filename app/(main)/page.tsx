@@ -122,10 +122,7 @@ export default async function HomePage() {
           <Section id="writing" label="Writing">
             <p className="section-intro">
               Technical squabbles and daily stuff, written down before my brain
-              tidies it up.{" "}
-              <TextLink href="/writing" arrow="forward">
-                Read all
-              </TextLink>
+              tidies it up.
             </p>
             <div className="stack tight">
               {writing.map((item) => (
@@ -137,6 +134,11 @@ export default async function HomePage() {
                 </div>
               ))}
             </div>
+            <p className="read-all">
+              <TextLink href="/writing" arrow="forward">
+                Read all
+              </TextLink>
+            </p>
           </Section>
         )}
 
