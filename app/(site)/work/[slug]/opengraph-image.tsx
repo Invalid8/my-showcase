@@ -35,7 +35,7 @@ export default async function Image({
         <span style={{ fontSize: 22, color: og.muted }}>{person.name}</span>
       }
     >
-      <div style={{ display: "flex", position: "absolute", top: 0, right: 0 }}>
+      <div style={{ display: "flex", position: "absolute", top: 0, right: -11 }}>
         <Ascii lines={SUN} size={16} />
       </div>
       {/* biome-ignore lint/performance/noImgElement: ImageResponse renders plain img */}
