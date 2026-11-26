@@ -13,7 +13,7 @@ export default async function OpengraphImage() {
   return new ImageResponse(
     <OgFrame footer={<span />}>
       <div style={{ display: "flex", position: "absolute", top: 0, right: -9 }}>
-        <Ascii lines={desertLines(155).slice(0, 22)} size={12} />
+        <Ascii lines={desertLines(168).slice(0, 22)} size={12} />
       </div>
       <div
         style={{
