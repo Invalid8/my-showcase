@@ -16,6 +16,19 @@ export type Block =
       items: { image: Img; caption: string }[];
       caption?: string;
     }
+  | {
+      type: "loop";
+      src: string;
+      poster: string;
+      label: string;
+      caption: string;
+      phone?: boolean;
+    }
+  | {
+      type: "switch";
+      items: { label: string; image: Img }[];
+      caption: string;
+    }
   | { type: "code"; file: string; lang: string; code: string; caption?: string }
   | { type: "terminal"; lines: string[] }
   | { type: "list"; heading?: string; items: { title: string; body: string }[] }
@@ -43,6 +56,52 @@ let doubtful = attempt.no_speech_prob > NO_SPEECH_LIMIT
     || chunk.len() < SHORT_BURST;
 found.retain(|s| s.text.chars().any(char::is_alphanumeric)
     && !(doubtful && is_phantom(&s.text, &language)));`;
+
+const basebandCode = `export function resolveHeadline(input: HeadlineInput): Headline {
+  const { carrierProfiled, balance, usage, status } = input;
+
+  if (carrierProfiled && balance) {
+    const usable = spendable(balance.bundles);
+    if (usable.length > 0) {
+      return { rung: "data-left", … };
+    }
+  }
+
+  if (usage && usage.bytes > 0) {
+    return { rung: "used-this-month", bytes: usage.bytes };
+  }
+
+  if (status?.reachable) {
+    return { rung: "connection", … };
+  }
+
+  return { rung: "not-identified" };
+}`;
+
+const basebandMotion = `export const morph = LinearTransition.springify()
+  .stiffness(Motion.spring.gentle.stiffness)
+  .damping(Motion.spring.gentle.damping)
+  .reduceMotion(ReduceMotion.System);
+
+export const contentIn = FadeIn.duration(
+  Motion.surfaceIn.duration,
+).reduceMotion(ReduceMotion.System);`;
+
+const basebandSheet = `const hide = useCallback(
+  (velocity = 0) => {
+    "worklet";
+    leaving.set(true);
+    …
+    const distance = Math.max(0, height.get() - offset.get());
+    const flung = velocity > 0 ? (3000 * distance) / velocity : Infinity;
+    const duration = Math.max(
+      Motion.sheetOut.min,
+      Math.min(Motion.sheetOut.duration, flung),
+    );
+    offset.set(slide(height.get(), duration, done));
+  },
+  …
+);`;
 
 export const caseStudies: CaseStudy[] = [
   {
@@ -188,7 +247,7 @@ export const caseStudies: CaseStudy[] = [
     line: "Your router, managed from your phone.",
     facts: [
       { label: "Role", value: "Design and engineering, start to finish" },
-      { label: "Built with", value: "Expo, React Native" },
+      { label: "Built with", value: "Expo, React Native, Reanimated, Skia" },
       { label: "Price", value: "Free, supported by donations" },
     ],
     links: [
@@ -200,54 +259,193 @@ export const caseStudies: CaseStudy[] = [
     blocks: [
       {
         type: "text",
-        heading: "No account, no server",
-        body: "The phone joins the router's Wi-Fi and the app talks to it directly over its local admin interface: no internet, no account and no server in between.",
-        note: "Verified on a ZTE MF935 on MTN Nigeria. An adapter for MTN's own router is written but can't sign in yet.",
+        body: "I built the first Baseband in April, for my own MiFi. It talks to the router over its own Wi-Fi: no internet, no account and no server in between. In September I went back, audited it screen by screen, and redrew and rebuilt all of it, from the mark to the motion.",
       },
       {
         type: "pair",
         images: [
           {
-            src: "/work/baseband-hub.png",
-            alt: "Baseband hub with data left, live speed and quick actions",
+            src: "/work/baseband/hub-before.png",
+            alt: "The first Baseband hub: every block in an identical card, yellow accents everywhere",
             width: 1080,
-            height: 2340,
+            height: 1680,
           },
           {
-            src: "/work/baseband-stats.png",
-            alt: "Baseband stats with months of recorded usage",
+            src: "/work/baseband/hub-after.png",
+            alt: "The redrawn hub: one large data-left figure, the speed trace and plain rows, with no cards",
             width: 1080,
-            height: 2340,
+            height: 1680,
           },
         ],
-        caption: "The hub and the stats screen.",
+        caption:
+          "The hub in April, captured from my phone, and as redrawn in September.",
+      },
+      {
+        type: "text",
+        heading: "It started with an audit of my own app",
+        body: "I captured all 21 screens over adb against the real router and wrote down where they failed before drawing anything. Everything was a card, so the balance and a settings row weighed the same. Yellow marked icons, buttons, links and badges alike, so it pointed at nothing. States were never designed, only defaulted: a broken link opened a blank black screen. The rules for the redesign came straight from that list: one question per screen, never state more than is known, every state drawn.",
+      },
+      {
+        type: "text",
+        body: "Then the system, on one canvas: a mark in four rounds, IBM Plex Sans chosen over Geist, Space Grotesk and Inter Tight, and azure picked after every candidate was drawn in both themes. Blue then stopped meaning download in the speed chart, which moved to teal and violet.",
+      },
+      {
+        type: "text",
+        heading: "Never state more than is known",
+        body: "The hub used to lead with a data balance read from the carrier's SMS, which only works on a network the app knows. Everywhere else it showed an empty card apologising for itself. Now the headline walks down a ladder to the first thing it can actually answer: data left, else the router's own monthly counter, else the connection, else nothing is claimed at all. The counter says it's the router's, so nobody mistakes it for their bill, and a YouTube bonus is shown but never added to the total, because it won't open a web page.",
+      },
+      {
+        type: "switch",
+        items: [
+          {
+            label: "1 · Data left",
+            image: {
+              src: "/work/baseband/rung-1.png",
+              alt: "Hub headline: 7.63 GB data left, from the network",
+              width: 1170,
+              height: 780,
+            },
+          },
+          {
+            label: "2 · Used this month",
+            image: {
+              src: "/work/baseband/rung-2.png",
+              alt: "Hub headline: 60.33 GB used this month, counted by the router",
+              width: 1170,
+              height: 780,
+            },
+          },
+          {
+            label: "3 · Connection",
+            image: {
+              src: "/work/baseband/rung-3.png",
+              alt: "Hub headline: Online, the router reports no usage counter",
+              width: 1170,
+              height: 780,
+            },
+          },
+          {
+            label: "4 · Not identified",
+            image: {
+              src: "/work/baseband/rung-4.png",
+              alt: "Hub headline: router not identified",
+              width: 1170,
+              height: 780,
+            },
+          },
+        ],
+        caption:
+          "The same headline on four routers. Rung 3 needs a router that reports its status but no monthly counter, which the MF935 never does, so it's covered by tests until a second model turns up.",
+      },
+      {
+        type: "code",
+        file: "lib/hub/headline.ts",
+        lang: "ts",
+        code: basebandCode,
+        caption: "Excerpt, trimmed with \u2026",
+      },
+      {
+        type: "text",
+        heading: "Unknown isn't unsupported",
+        body: "Capabilities were eleven booleans, so false meant three things at once: this model can't, we never found out, and we never wrote it. Now each one has four states and a reason. Unsupported stays on screen, disabled, with the reason under it. Unknown is offered with a small dot, and when the router carries it out it upgrades itself to supported, remembered by model and firmware so it survives a restart. Not written yet draws nothing. Deleting a message was the first write ever confirmed on this firmware.",
+      },
+      {
+        type: "loop",
+        src: "/work/baseband/action-loop.mp4",
+        poster: "/work/baseband/action-loop.jpg",
+        label:
+          "The Reboot button: unknown with a dot, tapped, Rebooting\u2026 in the same place, then supported without the dot",
+        caption:
+          "Unknown, tapped, pending in the same place, then supported. Rebuilt in HTML from the design's own values.",
+      },
+      {
+        type: "text",
+        heading: "One sheet under every drawer",
+        body: "The first drawers were hand-animated modals that travelled a fixed 400 or 600px and vanished the moment they were told to close, so they could never animate out. Every drawer now sits on one Sheet. It stays mounted until its exit finishes, travels exactly its measured height, follows the finger, and decides on release whether to close or spring back by projecting where the flick would land. It rides the keyboard frame by frame, never shrinks below the tallest state it has shown, and refuses the backdrop, the drag and Android's back while its own Cancel is disabled.",
+      },
+      {
+        type: "text",
+        body: "It leaves on a timed slide, not a spring. A sheet is its own native window, and a spring still settling after the sheet had gone kept that window up and swallowed the next tap. Opened from a tab, it once stood 83px too tall: the home indicator's 34 plus the tab bar's 49, inherited by the modal, so its inset now comes from the window itself.",
+      },
+      {
+        type: "loop",
+        phone: true,
+        src: "/work/baseband/sheet-loop.mp4",
+        poster: "/work/baseband/sheet-loop.jpg",
+        label:
+          "A sheet opens to its measured height, springs back from a short drag, then a flick closes it on a timed slide",
+        caption:
+          "Opens to its measured height, springs back from a short drag, and a flick closes it on a timed slide. Rebuilt in HTML from the component's own values.",
+      },
+      {
+        type: "code",
+        file: "components/ui/Sheet.tsx",
+        lang: "ts",
+        code: basebandSheet,
+        caption:
+          "Excerpt, trimmed with …. sheetOut is 240 ms, never under 120.",
+      },
+      {
+        type: "text",
+        heading: "One box that changes shape",
+        body: "Top up and Dial were two hand-animated sheets that kept the network's answer to themselves, so closing one lost the request, and the two could start competing sessions on a modem that holds one. They now share one session. Close and keep it running really keeps it: reopen either sheet and the answer or the menu is where it stopped. The answer is one box that changes shape between waiting, a menu to reply to and the answer, never a new box at a new size.",
+      },
+      {
+        type: "loop",
+        src: "/work/baseband/morph-loop.mp4",
+        poster: "/work/baseband/morph-loop.jpg",
+        label:
+          "The Dial box: waiting, a menu with a reply field, a reply sent, waiting again, then the answer",
+        caption:
+          "Waiting, a menu, a reply sent, then the answer: the box springs to each new size. Rebuilt in HTML from the design, on the app's own spring and fade.",
+      },
+      {
+        type: "code",
+        file: "lib/motion.ts",
+        lang: "ts",
+        code: basebandMotion,
+        caption:
+          "gentle is stiffness 385, damping 39. The text fades in over 200 ms, and both go instant under reduced motion.",
       },
       {
         type: "list",
-        heading: "What it does",
+        heading: "Under the hood",
         items: [
           {
-            title: "Hub",
-            body: "A headline that falls back from data left to used this month to connection state, live per-second speed, and restart, dial, top up and share Wi-Fi.",
+            title: "A speed line drawn on the UI thread",
+            body: "The live trace is drawn with Skia from shared values. The first version, in SVG, re-parsed a path string every frame and loaded the phone. It spans the latest unbroken minute of readings, so the line always fills the width.",
           },
           {
-            title: "Inbox",
-            body: "The router's own SMS inbox as threads, replies and new messages to several numbers, readings pulled from network messages, and USSD sessions.",
+            title: "Speed that is actually measured",
+            body: "A capture proved the router's realtime counter equals the change in its byte counter each second, so the live speed is a real rate, read once a second apart from the slower status poll.",
           },
           {
-            title: "Devices",
-            body: "Who is on the Wi-Fi, local names, block and unblock, and a scan-to-join code.",
-          },
-          {
-            title: "Stats",
-            body: "Months of recorded usage, a monthly limit with warnings, and a speed test.",
+            title: "Native where the platform has it",
+            body: "On iOS the tab bar, headers, long-press menus and confirmations are the system's own; Android keeps the drawn design. Both share the same copy.",
           },
         ],
       },
       {
         type: "text",
-        heading: "Honest about the hardware",
-        body: "Every screen composes itself from what the connected router declares it can do, and says so when something is unknown, unsupported or not written yet.",
+        heading: "Room to unfold",
+        body: "A layout study for a foldable iPhone. Folded, the hub reflows wider and shorter. Unfolded, it splits into two equal halves so the fold falls between them, with your devices beside the hub. Same components and data, only reflowed.",
+      },
+      {
+        type: "image",
+        wide: true,
+        image: {
+          src: "/work/baseband/duo-unfolded.png",
+          alt: "Baseband unfolded on a foldable iPhone: the hub on the left half, connected devices on the right",
+          width: 2000,
+          height: 1423,
+        },
+        caption:
+          "Unfolded: the hub on one half, devices on the other. A study; the shipped app is unchanged.",
+      },
+      {
+        type: "text",
+        body: "It's free, supported by donations, and the address sheet that finds your router has its own four states on",
+        link: { label: "Details", href: "/details" },
       },
     ],
   },

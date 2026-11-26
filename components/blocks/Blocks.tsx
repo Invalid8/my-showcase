@@ -1,8 +1,10 @@
 import type { Block } from "@/content/case-studies";
 import { NumberedList } from "../site/NumberedList";
 import { Section } from "../site/Section";
-import { TextLink } from "../site/TextLink";
+import { isExternal, TextLink } from "../site/TextLink";
 import { CopyButton } from "./CopyButton";
+import { Loop } from "./Loop";
+import { Switcher } from "./Switcher";
 import { ZoomImage } from "./ZoomImage";
 
 function Figure({
@@ -36,7 +38,12 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
     switch (block.type) {
       case "text":
         return (
-          <div key={key} className="section with-note">
+          <div
+            key={key}
+            className={
+              block.heading ? "section with-note" : "section with-note follow"
+            }
+          >
             {block.heading && (
               <h2 className="section-label">{block.heading}</h2>
             )}
@@ -45,7 +52,11 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
               {block.link && (
                 <>
                   {" "}
-                  <TextLink href={block.link.href} arrow="external" dashed>
+                  <TextLink
+                    href={block.link.href}
+                    arrow={isExternal(block.link.href) ? "external" : "forward"}
+                    dashed
+                  >
                     {block.link.label}
                   </TextLink>
                 </>
@@ -116,6 +127,25 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
               </figcaption>
             )}
           </figure>
+        );
+      case "loop":
+        fig++;
+        return (
+          <Figure key={key} n={fig} caption={block.caption}>
+            <Loop
+              src={block.src}
+              poster={block.poster}
+              label={block.label}
+              phone={block.phone}
+            />
+          </Figure>
+        );
+      case "switch":
+        fig++;
+        return (
+          <Figure key={key} n={fig} caption={block.caption}>
+            <Switcher items={block.items} />
+          </Figure>
         );
       case "code":
         return (
