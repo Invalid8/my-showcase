@@ -1175,33 +1175,6 @@ a.chip:hover::after {
   margin-top: 12px;
 }
 
-.filters {
-  border: 0;
-  padding: 0;
-  min-width: 0;
-  display: flex;
-  gap: 16px;
-  margin-top: 28px;
-}
-
-.filters button {
-  font:
-    12px / 1.6 var(--font-jetbrains-mono),
-    monospace;
-  color: var(--text-faint);
-  text-underline-offset: 6px;
-  transition: color 160ms ease-out;
-}
-
-.filters button:hover,
-.filters button[aria-pressed="true"] {
-  color: var(--text-primary);
-}
-
-.filters button[aria-pressed="true"] {
-  text-decoration: underline;
-}
-
 .entry {
   margin-bottom: 96px;
 }
@@ -1243,47 +1216,6 @@ a.chip:hover::after {
   height: auto;
   border-radius: 12px;
   border: 1px solid var(--line);
-}
-
-.marks {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-
-.mark-card {
-  padding: 18px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--surface);
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.mark-card h3 {
-  color: var(--text-primary);
-  margin: 14px 0 8px;
-}
-
-.swatches {
-  display: grid;
-  gap: 2px;
-  margin-bottom: 12px;
-  font:
-    11px / 1.6 var(--font-jetbrains-mono),
-    monospace;
-  color: var(--text-faint);
-}
-
-.swatches span::before {
-  content: "";
-  display: inline-block;
-  width: 9px;
-  height: 9px;
-  margin-right: 8px;
-  vertical-align: -1px;
-  border: 1px solid var(--line);
-  background: var(--swatch);
 }
 
 .decode-demo {
@@ -1368,8 +1300,7 @@ a.chip:hover::after {
     border-inline: 0;
   }
 
-  .pair,
-  .marks {
+  .pair {
     grid-template-columns: 1fr;
   }
 
@@ -1410,12 +1341,6 @@ a.chip:hover::after {
 button.heart {
   color: var(--heart);
   cursor: pointer;
-}
-
-[data-filter="interaction"] .entry:not([data-kind="interaction"]),
-[data-filter="ui"] .entry:not([data-kind="ui"]),
-[data-filter="brand"] .entry:not([data-kind="brand"]) {
-  display: none;
 }
 
 /* résumé */
