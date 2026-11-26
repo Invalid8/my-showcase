@@ -4,7 +4,6 @@ export type Block =
   | { type: "text"; heading?: string; body: string; note?: string }
   | { type: "image"; image: Img; caption: string; wide?: boolean }
   | { type: "pair"; images: [Img, Img]; caption: string }
-  | { type: "live"; url: string; caption: string }
   | { type: "code"; file: string; lang: string; code: string; caption?: string }
   | { type: "terminal"; lines: string[] }
   | { type: "list"; heading?: string; items: { title: string; body: string }[] }
@@ -76,12 +75,6 @@ export const caseStudies: CaseStudy[] = [
         heading: "Two models, named by what they're for",
         body: "Fast (Whisper small) suits most voice notes; Accurate (large-v3-turbo) handles heavy accents and noise. You pick an outcome, not a model size.",
         note: "The first transcription downloads the Fast model, about 480 MB. After that it works offline.",
-      },
-      {
-        type: "live",
-        url: "https://vscrybe.dalgoridim.com",
-        caption:
-          "The real site, embedded. Scroll inside it, switch the theme, try the download menu.",
       },
       {
         type: "list",

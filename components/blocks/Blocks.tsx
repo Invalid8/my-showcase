@@ -2,7 +2,6 @@ import type { Block } from "@/content/case-studies";
 import { NumberedList } from "../site/NumberedList";
 import { Section } from "../site/Section";
 import { CopyButton } from "./CopyButton";
-import { LivePreview } from "./LivePreview";
 import { ZoomImage } from "./ZoomImage";
 
 function Figure({
@@ -77,13 +76,6 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
                 </div>
               ))}
             </div>
-          </Figure>
-        );
-      case "live":
-        fig++;
-        return (
-          <Figure key={key} n={fig} caption={block.caption} wide>
-            <LivePreview url={block.url} title={block.caption} />
           </Figure>
         );
       case "code":

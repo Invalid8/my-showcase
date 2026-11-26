@@ -1033,40 +1033,6 @@ a.chip:hover::after {
   margin-top: 12px;
 }
 
-.live header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--line);
-  font:
-    11px / 1.6 var(--font-jetbrains-mono),
-    monospace;
-  color: var(--text-faint);
-}
-
-.live header .dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: #46a758;
-  margin-right: 8px;
-}
-
-.live header nav {
-  display: flex;
-  gap: 14px;
-}
-
-.live iframe {
-  display: block;
-  width: 100%;
-  height: 560px;
-  border: 0;
-  background: var(--background);
-}
-
 .filters {
   border: 0;
   padding: 0;
@@ -1273,9 +1239,6 @@ a.chip:hover::after {
     grid-template-columns: 84px 1fr;
   }
 
-  .live iframe {
-    height: 480px;
-  }
 }
 
 .demo-stage .ascii-rope {
