@@ -1431,9 +1431,20 @@ button.heart {
 
 .resume-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 24px;
+  gap: 8px 24px;
   font-size: 15px;
+}
+
+.resume-actions > * {
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .resume-actions .mono-meta {
+    flex-basis: 100%;
+  }
 }
 
 .cv {
