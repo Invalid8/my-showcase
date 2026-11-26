@@ -351,6 +351,14 @@ body {
   margin-bottom: 0;
 }
 
+.section:has(+ :is(.figure, .code-block, .terminal)) {
+  margin-bottom: 28px;
+}
+
+.section + :is(.figure, .code-block, .terminal) {
+  margin-top: 28px;
+}
+
 .section-label {
   color: var(--text-primary);
   font:
