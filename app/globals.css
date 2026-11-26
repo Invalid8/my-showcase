@@ -653,3 +653,56 @@ a.chip:hover::after {
     justify-content: space-between;
   }
 }
+
+/* ascii */
+
+.ascii-stage {
+  position: absolute;
+  inset: 0 0 auto 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ascii,
+.ascii-rope,
+.ascii-dust,
+.ascii-note {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-variant-ligatures: none;
+  color: var(--ascii);
+  will-change: transform;
+}
+
+.ascii {
+  line-height: 1.2;
+  white-space: pre;
+}
+
+.ascii.scene {
+  color: var(--ascii-scene);
+}
+
+.ascii-rope,
+.ascii-dust {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.ascii-dust {
+  color: var(--ascii-dust);
+}
+
+.ascii-note {
+  color: var(--ascii-note);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.desert-band {
+  position: relative;
+  height: calc(24 * 11px * 1.2);
+}
