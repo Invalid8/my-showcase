@@ -144,7 +144,7 @@ function mapFeedItem(row: FeedRow): PortfolioFeedItem | null {
     title: row.title?.trim() || "Untitled feed",
     description: row.excerpt?.trim() || "",
     tags: tags(row.tags),
-    href: `/f/${slug}`,
+    href: `/writing/${slug}`,
     body: row.body || undefined,
   };
 }

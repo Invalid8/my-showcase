@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HeartBurst } from "./HeartBurst";
 import { ThemeToggle } from "./ThemeToggle";
 
 const LINKS = [
@@ -13,7 +14,7 @@ export function Footer() {
     <footer className="site-footer">
       <nav aria-label="Site">
         <span>
-          Built with <span className="heart">♥</span>
+          Built with <HeartBurst />
         </span>
         {LINKS.map((link) => (
           <Link key={link.href} href={link.href}>

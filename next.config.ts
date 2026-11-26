@@ -2,6 +2,18 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  async redirects() {
+    return [
+      { source: "/feed", destination: "/writing", permanent: true },
+      { source: "/feed/:slug", destination: "/writing/:slug", permanent: true },
+      { source: "/f/:slug", destination: "/writing/:slug", permanent: true },
+      {
+        source: "/music",
+        destination: "/crafts/record-player",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

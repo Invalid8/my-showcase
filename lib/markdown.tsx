@@ -27,7 +27,7 @@ const components = {
     <h2
       {...props}
       className={cn(
-        "mt-12 scroll-mt-24 font-display text-2xl font-medium text-primary first:mt-0 sm:text-3xl",
+        "mt-10 scroll-mt-24 text-[16px] font-medium leading-snug text-primary first:mt-0",
         className,
       )}
     />
@@ -36,7 +36,7 @@ const components = {
     <h2
       {...props}
       className={cn(
-        "mt-12 scroll-mt-24 font-display text-2xl font-medium text-primary first:mt-0 sm:text-3xl",
+        "mt-10 scroll-mt-24 text-[16px] font-medium leading-snug text-primary first:mt-0",
         className,
       )}
     />
@@ -45,7 +45,7 @@ const components = {
     <h3
       {...props}
       className={cn(
-        "mt-9 scroll-mt-24 font-display text-xl font-medium text-primary",
+        "mt-8 scroll-mt-24 text-[15px] font-medium text-primary",
         className,
       )}
     />
@@ -54,7 +54,7 @@ const components = {
     <h4
       {...props}
       className={cn(
-        "mt-8 scroll-mt-24 font-display text-lg font-medium text-primary",
+        "mt-8 scroll-mt-24 text-[15px] font-medium text-secondary",
         className,
       )}
     />
@@ -87,7 +87,7 @@ const components = {
     <blockquote
       {...props}
       className={cn(
-        "mt-7 border-s-2 border-accent ps-5 text-secondary italic",
+        "mt-7 border-s-2 border-line-strong ps-5 text-primary",
         className,
       )}
     />
@@ -104,10 +104,7 @@ const components = {
         href={href}
         target={external ? "_blank" : undefined}
         rel={external ? "noopener noreferrer" : undefined}
-        className={cn(
-          "text-accent underline underline-offset-4 hover:no-underline",
-          className,
-        )}
+        className={cn("text-link", className)}
       />
     );
   },
@@ -148,7 +145,7 @@ const components = {
     <pre
       {...props}
       className={cn(
-        "mt-7 overflow-x-auto rounded border border-line bg-surface p-5 font-mono text-xs leading-6",
+        "mt-7 overflow-x-auto rounded-md bg-surface p-5 font-mono text-[13px] leading-6 [font-variant-ligatures:none]",
         className,
       )}
     />
