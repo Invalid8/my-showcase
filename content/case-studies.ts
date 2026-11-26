@@ -133,8 +133,29 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "text",
-        heading: "Progress that knows where it's printing",
-        body: "The command line rewrites one line in place when it's in a terminal, with an estimate of time left. Piped into a log, that would be thousands of carriage returns, so it prints a plain line every 10% or every 30 seconds instead, and ends each file with how long the audio was and how long it took.",
+        heading: "The same engine, as a command",
+        body: "The app's binary is also a command line tool. Point it at files or a whole folder and it writes a .txt beside each recording, skipping any that already have one, so a folder of voice notes can be kept up to date by running the same line again.",
+      },
+      {
+        type: "terminal",
+        lines: [
+          "$ vscrybe transcribe --help",
+          "Transcribe files or folders, writing a .txt next to each",
+          "",
+          "Usage: vscrybe transcribe [OPTIONS] <PATHS>...",
+          "",
+          "Options:",
+          "  -m, --model <MODEL>        small (Fast), large-v3-turbo (Accurate), or a model you added (see `vscrybe models`) [default: small]",
+          "  -l, --language <LANGUAGE>  Language spoken in the recordings, as a code such as en, fr or yo [default: en]",
+          "  -t, --timestamps           Prefix each line with [m:ss]",
+          "  -f, --force                Redo files that already have a .txt",
+          "      --stdout               Print transcripts instead of writing files",
+          "  -h, --help                 Print help",
+        ],
+      },
+      {
+        type: "text",
+        body: "Its progress knows where it's printing. In a terminal it rewrites one line in place, with an estimate of time left. Piped into a log, that would be thousands of carriage returns, so it prints a plain line every 10% or every 30 seconds instead, and ends each file with how long the audio was and how long it took.",
       },
       {
         type: "terminal",

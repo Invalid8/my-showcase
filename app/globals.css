@@ -1030,6 +1030,10 @@ a.chip:hover::after {
   white-space: pre;
 }
 
+.terminal > div {
+  min-height: 1lh;
+}
+
 .terminal .prompt {
   color: var(--text-primary);
 }

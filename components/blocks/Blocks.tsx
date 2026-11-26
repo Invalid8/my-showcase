@@ -138,7 +138,10 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
         return (
           <pre key={key} className="terminal">
             {block.lines.map((line, i) => (
-              <div key={line} className={i === 0 ? "prompt" : undefined}>
+              <div
+                key={`${i}-${line}`}
+                className={i === 0 ? "prompt" : undefined}
+              >
                 {line}
               </div>
             ))}
