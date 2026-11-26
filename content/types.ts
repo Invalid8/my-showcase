@@ -14,6 +14,9 @@ export type WorkEntry = {
   name: string;
   icon: string;
   description: string;
+  origin: "mine" | "client";
+  story: string;
+  meta: string;
 };
 
 export type Contact = {

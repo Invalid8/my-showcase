@@ -22,6 +22,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 1,
     },
+    {
+      url: absoluteUrl("/work"),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
     ...caseStudies.map((study) => ({
       url: absoluteUrl(`/work/${study.slug}`),
       changeFrequency: "monthly" as const,

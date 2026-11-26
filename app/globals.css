@@ -528,6 +528,10 @@ a.chip:hover::after {
   line-height: 1.6;
 }
 
+.work-list .mono-meta {
+  margin-top: 8px;
+}
+
 .item-icon {
   display: inline-block;
   width: 18px;

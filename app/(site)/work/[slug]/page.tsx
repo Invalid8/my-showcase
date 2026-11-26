@@ -40,7 +40,7 @@ export default async function CaseStudyPage({
   return (
     <article>
       <header className="page-head">
-        <BackLink href="/#work">Work</BackLink>
+        <BackLink href="/work">Work</BackLink>
         <h1 className="page-title">
           <Image
             className="item-icon"
