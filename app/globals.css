@@ -1105,7 +1105,7 @@ a.chip:hover::after {
 }
 
 .entry .media {
-  margin: 0 0 24px;
+  margin-bottom: 24px;
 }
 
 .entry .specs {

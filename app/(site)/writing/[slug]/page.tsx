@@ -50,6 +50,9 @@ export default async function ArticlePage({
   ]);
   if (!item) notFound();
 
+  const body = item.body?.replace(/^\s*#\s+(.+)\n/, (heading, text: string) =>
+    text.trim() === item.title ? "" : heading,
+  );
   const index = items.findIndex((entry) => entry.slug === slug);
   const previous = items[index + 1];
   const next = items[index - 1];
@@ -116,13 +119,13 @@ export default async function ArticlePage({
               </time>
             )}
             {item.publishedAt && " · "}
-            {readingMinutes(item.body)} min read
+            {readingMinutes(body)} min read
           </>
         }
         line={item.description}
       />
-      {item.body && (
-        <div className="prose-feed">{await renderMarkdown(item.body)}</div>
+      {body && (
+        <div className="prose-feed">{await renderMarkdown(body)}</div>
       )}
       <Adjacent
         label="More writing"

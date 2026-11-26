@@ -108,7 +108,7 @@ export const crafts: Craft[] = [
       "Threads drawn with | / \\ that hang, swing and get pushed by the pointer.",
     tags: ["Physics"],
     href: "/crafts/rope",
-    line: "A thread that is only ever |, / or \\.",
+    line: "A thread that bends by changing its characters.",
     intro:
       "Run your pointer across the threads. They swing away, sway on their own and settle back.",
     made: [
