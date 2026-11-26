@@ -895,6 +895,7 @@ a.chip:hover::after {
 
 .figure figcaption {
   margin-top: 12px;
+  text-align: center;
   font-size: 13px;
   line-height: 1.6;
   color: var(--text-faint);
