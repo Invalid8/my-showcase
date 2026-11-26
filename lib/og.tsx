@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { ReactNode } from "react";
+import { person } from "@/content/home";
 import { Desert } from "./ascii/desert/scene";
 
 export const ogSize = { width: 1200, height: 630 };
@@ -117,3 +118,52 @@ export function OgFrame({
 }
 
 export const og = COLORS;
+
+export function OgCard({
+  label,
+  title,
+  line,
+  accent,
+}: {
+  label: string;
+  title: string;
+  line: string;
+  accent: ReactNode;
+}) {
+  return (
+    <OgFrame
+      footer={
+        <span style={{ fontSize: 22, color: COLORS.muted }}>{person.name}</span>
+      }
+    >
+      <div
+        style={{ display: "flex", position: "absolute", top: 48, right: 64 }}
+      >
+        {accent}
+      </div>
+      <span
+        style={{
+          fontFamily: "Mono",
+          fontSize: 20,
+          letterSpacing: 4,
+          color: COLORS.faint,
+        }}
+      >
+        {label.toUpperCase()}
+      </span>
+      <span style={{ fontSize: 64, marginTop: 14 }}>{title}</span>
+      <div
+        style={{
+          display: "flex",
+          fontFamily: "Serif",
+          fontStyle: "italic",
+          fontSize: 46,
+          lineHeight: 1.2,
+          maxWidth: 940,
+        }}
+      >
+        {line}
+      </div>
+    </OgFrame>
+  );
+}

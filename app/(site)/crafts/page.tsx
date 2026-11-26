@@ -11,6 +11,7 @@ export const metadata: Metadata = createPageMetadata({
   description:
     "Things I built because I wanted to see them move, one page each.",
   path: "/crafts",
+  image: null,
 });
 
 export default function CraftsPage() {

@@ -35,6 +35,7 @@ export async function generateMetadata({
     title: craft.title,
     description: craft.blurb,
     path: `/crafts/${slug}`,
+    image: null,
   });
 }
 
