@@ -109,6 +109,7 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
               poster={block.poster}
               label={block.label}
               phone={block.phone}
+              width={block.width}
             />
           </Figure>
         );

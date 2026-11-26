@@ -17,6 +17,7 @@ export type Block =
       label: string;
       caption: string;
       phone?: boolean;
+      width?: number;
     }
   | {
       type: "switch";
@@ -127,6 +128,60 @@ const fillyrProject = `export function projectField(field: FlyerField, from: Siz
     …
   }
 }`;
+
+const waysdropMutation = `function stripRouteKeys<T extends object>(variables: T) {
+  return Object.fromEntries(
+    Object.entries(variables).filter(([k]) => !k.startsWith("_"))
+  ) as Omit<T, \`_\${string}\`>
+}
+
+export function useApiMutation<TResponse, TVariables = unknown>(
+  url: string | ((variables: TVariables) => string),
+  method: "post" | "put" | "patch" | "delete",
+  …
+) {
+  return useMutation({
+    mutationFn: async (variables) => {
+      const resolvedUrl = typeof url === "function" ? url(variables) : url
+      …
+      const { data } = await api.request({ url: resolvedUrl, method, data: body })
+      return data
+    },
+    …`;
+
+const waysdropMarkers = `const toRemove = Array.from(existingLocationIds).filter(
+  (id) => !newLocationIds.has(id),
+);
+toRemove.forEach((id) => {
+  removeMarker(id);
+  locationsMapRef.current.delete(id);
+});
+
+newLocations.forEach((location) => {
+  const existing = locationsMapRef.current.get(location.id);
+  if (!existing) {
+    locationsMapRef.current.set(location.id, location);
+    updateMarkerPosition(location);
+  } else if (existing.lat !== location.lat || existing.lng !== location.lng) {
+    …
+    updateMarkerPosition(location);
+  }
+});`;
+
+const waysdropSocket = `socket = io(serverUrl, {
+  transports: ['websocket', 'polling'],
+  auth: {
+    ...(token ? { token } : {}),
+    ...(visitorId ? { visitorId } : {}),
+  },
+  autoConnect: false,
+  reconnection: true,
+  reconnectionAttempts: Infinity,
+  reconnectionDelay: 500,
+  reconnectionDelayMax: 5000,
+  randomizationFactor: 0.5,
+  timeout: 10000,
+})`;
 
 export const caseStudies: CaseStudy[] = [
   {
@@ -584,28 +639,89 @@ export const caseStudies: CaseStudy[] = [
     facts: [
       { label: "Role", value: "Frontend developer" },
       { label: "When", value: "Dec 2025 – Mar 2026" },
+      {
+        label: "Built with",
+        value: "Next.js, TanStack Query and Table, Google Maps, Socket.IO",
+      },
     ],
     links: [{ label: "waysdrop.com", href: "https://waysdrop.com" }],
     blocks: [
       {
         type: "text",
-        body: "Couriers run their day from a mobile app with labels, messaging and earnings; stores manage stock, orders and sales on the web; and anyone can track nearby couriers live.",
-      },
-      {
-        type: "image",
-        wide: true,
-        image: {
-          src: "/work/waysdrop.webp",
-          alt: "Waysdrop",
-          width: 1008,
-          height: 594,
-        },
-        caption: "Waysdrop.",
+        body: "Waysdrop connects people, stores and couriers for on-demand delivery. I built its web side across eight repos: the customer app, the admin, agent and support dashboards, and the chat widget they share. The internal tools grew to dozens of screens, so the work that mattered most was the small set of components and hooks every screen is made from.",
       },
       {
         type: "text",
-        heading: "My part",
-        body: "I built the web side: the customer web app, the admin, agent and support dashboards, chat and the landing page.",
+        heading: "Every list is the same two components",
+        body: "Almost every admin screen is a Stats block over a TableList. A page passes an endpoint and its columns; the table brings search, filters, pagination kept in the URL, columns you can hide and that stay hidden, and an export button that appears whenever the API offers one. The admin alone has 49 list pages and 33 stats blocks built this way, and the agent and global admin dashboards reuse the same pieces.",
+      },
+      {
+        type: "text",
+        body: "Every write goes through one mutation hook and then invalidates the queries it touched, so a POST, PUT or DELETE shows up on screen the moment the server confirms it, with no reload and no stale row. Route parameters ride in the same typed object as the body: keys starting with an underscore build the URL and are stripped before the request is sent.",
+      },
+      {
+        type: "loop",
+        src: "/work/waysdrop/promo-toggle.mp4",
+        poster: "/work/waysdrop/promo-toggle.jpg",
+        label:
+          "Disabling a promo code: the menu, a confirmation, then the row's status changes to Disabled without a reload, and back",
+        caption:
+          "Disable, confirm, and the row updates in place. Run locally against a mock API.",
+      },
+      {
+        type: "code",
+        file: "lib/hooks/use-api.ts",
+        lang: "ts",
+        code: waysdropMutation,
+        caption: "Excerpt from the support dashboard, trimmed with \u2026",
+      },
+      {
+        type: "text",
+        heading: "Couriers on a live map",
+        body: "The admin's map follows every courier live. Positions arrive as batches over Server-Sent Events, and each batch is diffed against what's on the map: new couriers get a marker, moved ones have their existing marker repositioned, and ones that went offline are removed. Nothing is redrawn between batches, and nearby markers cluster into counts until you zoom in.",
+      },
+      {
+        type: "loop",
+        src: "/work/waysdrop/map-live.mp4",
+        poster: "/work/waysdrop/map-live.jpg",
+        label:
+          "The admin tracking map: couriers across Lagos moving and clustering as live batches arrive",
+        caption:
+          "Couriers moving across Lagos as batches arrive. The stream here is simulated; the map is the real component.",
+      },
+      {
+        type: "code",
+        file: "components/custom/map/GoogleMaps.tsx",
+        lang: "ts",
+        code: waysdropMarkers,
+        caption: "Excerpt, trimmed with \u2026",
+      },
+      {
+        type: "text",
+        heading: "A chat widget that survives a bad connection",
+        body: "Support chat ships as its own package, @waysdrop/chat, so the customer app and anything else can drop it in with one component. It went through fourteen versions in two months as the support team used it. The last one changed how it treats a bad connection: it now retries forever with backoff capped at five seconds instead of giving up after ten tries, the composer never locks while it's offline so you can keep typing, and typing indicators are only sent while connected, so agents never see a stale one.",
+      },
+      {
+        type: "loop",
+        width: 380,
+        src: "/work/waysdrop/chat.mp4",
+        poster: "/work/waysdrop/chat.jpg",
+        label:
+          "The chat widget: a question answered, the connection drops to Connecting, the visitor keeps typing, and it comes back Online",
+        caption:
+          "A question answered, then the connection drops and comes back while you keep typing. The widget is the published package; the server is a local mock.",
+      },
+      {
+        type: "code",
+        file: "src/lib/socket.ts",
+        lang: "ts",
+        code: waysdropSocket,
+        caption: "Excerpt, trimmed with \u2026",
+      },
+      {
+        type: "text",
+        body: "This was client work, so only the components are shown here.",
+        link: { label: "waysdrop.com", href: "https://waysdrop.com" },
       },
     ],
   },

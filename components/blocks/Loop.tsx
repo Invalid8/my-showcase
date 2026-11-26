@@ -7,11 +7,13 @@ export function Loop({
   poster,
   label,
   phone,
+  width,
 }: {
   src: string;
   poster: string;
   label: string;
   phone?: boolean;
+  width?: number;
 }) {
   const video = useRef<HTMLVideoElement>(null);
   const [slow, setSlow] = useState(false);
@@ -36,7 +38,14 @@ export function Loop({
   }, [slow]);
 
   return (
-    <div className={phone ? "loop phone" : "loop"}>
+    <div
+      className={phone ? "loop phone" : "loop"}
+      style={
+        width
+          ? ({ "--loop-width": `${width}px` } as React.CSSProperties)
+          : undefined
+      }
+    >
       <div className="loop-screen">
         <video
           ref={video}
