@@ -107,10 +107,10 @@ export const caseStudies: CaseStudy[] = [
         type: "image",
         wide: true,
         image: {
-          src: "/work/vscrybe/tray.png",
+          src: "/work/vscrybe/tray-preview.png",
           alt: "Two files waiting in the tray above the composer, the first playing as a preview",
-          width: 1640,
-          height: 232,
+          width: 1656,
+          height: 316,
         },
         caption:
           "Two waiting, the first playing as a preview. Both are still here after a restart.",
