@@ -100,34 +100,6 @@ export function Blocks({ blocks }: { blocks: Block[] }) {
             </div>
           </Figure>
         );
-      case "states":
-        return (
-          <figure
-            key={key}
-            className="figure bleed states"
-            style={
-              {
-                "--columns": block.columns,
-                "--narrow-columns": Math.ceil(block.columns / 2),
-              } as React.CSSProperties
-            }
-          >
-            {block.items.map((item) => (
-              <figure key={item.image.src}>
-                <ZoomImage
-                  {...item.image}
-                  sizes={`(max-width: 720px) 100vw, ${Math.round(880 / block.columns)}px`}
-                />
-                <figcaption>{item.caption}</figcaption>
-              </figure>
-            ))}
-            {block.caption && (
-              <figcaption className="states-caption">
-                {block.caption}
-              </figcaption>
-            )}
-          </figure>
-        );
       case "loop":
         fig++;
         return (

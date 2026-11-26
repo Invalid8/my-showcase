@@ -1220,20 +1220,8 @@ a.chip:hover::after {
 
 .states {
   display: grid;
-  grid-template-columns: repeat(var(--columns, 4), 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
-}
-
-.states figure {
-  margin: 0;
-}
-
-.states .states-caption {
-  grid-column: 1 / -1;
-  margin-top: 0;
-  font: inherit;
-  font-size: 13px;
-  line-height: 1.6;
 }
 
 .states figcaption {
@@ -1380,7 +1368,7 @@ a.chip:hover::after {
   }
 
   .states {
-    grid-template-columns: repeat(var(--narrow-columns, 2), 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .facts {

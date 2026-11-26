@@ -11,12 +11,6 @@ export type Block =
   | { type: "image"; image: Img; caption: string; wide?: boolean }
   | { type: "pair"; images: [Img, Img]; caption: string }
   | {
-      type: "states";
-      columns: number;
-      items: { image: Img; caption: string }[];
-      caption?: string;
-    }
-  | {
       type: "loop";
       src: string;
       poster: string;
