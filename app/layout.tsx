@@ -8,7 +8,6 @@ import {
 } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
-import { ScrollProvider } from "@/context/ScrollContext";
 import { siteConfig } from "@/lib/seo";
 
 const inter = Inter({
@@ -106,7 +105,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         <ThemeProvider attribute="data-theme" disableTransitionOnChange>
-          <ScrollProvider>{children}</ScrollProvider>
+          {children}
         </ThemeProvider>
         {process.env.NODE_ENV === "production" && <Analytics />}
       </body>

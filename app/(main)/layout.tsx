@@ -1,26 +1,5 @@
-import type React from "react";
-import ProximitySidebar from "@/components/shared/ProximitySidebar";
-import SiteFooter from "@/components/shared/SiteFooter";
+import type { ReactNode } from "react";
 
-function layout({ children }: { children: React.ReactNode }) {
-  return (
-    <div>
-      <ProximitySidebar
-        side="left"
-        sections={[
-          { id: "intro", label: "Introduction", kind: "title" },
-          { id: "work", label: "Selected work", kind: "section" },
-          { id: "approach", label: "Approach", kind: "subtitle" },
-          { id: "capabilities", label: "Capabilities", kind: "subtitle" },
-          { id: "feed", label: "My feed", kind: "subtitle" },
-          { id: "care", label: "What I care about", kind: "subtitle" },
-          { id: "music", label: "Music", kind: "section" },
-        ]}
-      />
-      <main id="content">{children}</main>
-      <SiteFooter />
-    </div>
-  );
+export default function MainLayout({ children }: { children: ReactNode }) {
+  return <div className="site">{children}</div>;
 }
-
-export default layout;

@@ -3,11 +3,18 @@ import "server-only";
 import { unstable_cache } from "next/cache";
 import { Pool } from "pg";
 import { cache } from "react";
-import type { Project } from "@/components/shared/Work/types";
 import {
   feedItems as fallbackFeedItems,
   projects as fallbackProjects,
 } from "@/utils/constants";
+
+export type Project = {
+  name: string;
+  descriptor: string;
+  description: string;
+  image: string;
+  href: string;
+};
 
 type ProjectRow = {
   id: string;

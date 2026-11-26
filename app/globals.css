@@ -358,6 +358,10 @@ h6 {
   margin-bottom: 88px;
 }
 
+.section:last-child {
+  margin-bottom: 0;
+}
+
 .section-label {
   color: var(--text-primary);
   font:
@@ -658,7 +662,7 @@ a.chip:hover::after {
 
 .ascii-stage {
   position: absolute;
-  inset: 0 0 auto 0;
+  inset: 0;
   pointer-events: none;
   overflow: hidden;
 }
@@ -705,4 +709,87 @@ a.chip:hover::after {
 .desert-band {
   position: relative;
   height: calc(24 * 11px * 1.2);
+}
+
+/* home */
+
+.home {
+  position: relative;
+  overflow: hidden;
+}
+
+.home main {
+  padding: calc(24 * 11px * 1.2 + 144px) 0 96px;
+}
+
+.home .motto.waiting {
+  visibility: hidden;
+}
+
+.motto-float {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  margin: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.home main > section,
+.home .site-footer {
+  transition:
+    opacity 700ms ease-out,
+    transform 1000ms cubic-bezier(0.22, 0.8, 0.24, 1);
+}
+
+.home main > section:nth-child(2) {
+  transition-delay: 90ms;
+}
+
+.home main > section:nth-child(3) {
+  transition-delay: 180ms;
+}
+
+.home main > section:nth-child(n + 4),
+.home .site-footer {
+  transition-delay: 260ms;
+}
+
+.home[data-intro="on"] main > section,
+.home[data-intro="on"] .site-footer {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.ascii-layer {
+  position: absolute;
+  inset: 0;
+  transition: opacity 900ms ease-out;
+}
+
+.home[data-intro="on"] .ascii-layer {
+  opacity: 0;
+}
+
+@media (max-width: 720px) {
+  .home main {
+    padding-top: calc(24 * 11px * 1.2 + 28px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home[data-intro="on"] main > section,
+  .home[data-intro="on"] .site-footer {
+    opacity: 1;
+    transform: none;
+  }
+
+  .home .motto.waiting {
+    visibility: visible;
+  }
+}
+
+.site p.book {
+  margin-top: 16px;
 }

@@ -4,7 +4,7 @@ import { TextLink } from "./TextLink";
 
 export function WorkItem({ work }: { work: WorkEntry }) {
   return (
-    <article>
+    <article data-work={work.slug}>
       <Image
         className="item-icon"
         src={work.icon}
