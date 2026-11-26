@@ -19,20 +19,19 @@ const SCENE_SIZE = 11;
 const MOBILE = 720;
 const WIDE = 1180;
 const MOTTO_KEY = "motto";
-const INTRO_KEY = "intro-seen";
 const RISE_DELAY = 2300;
 const RISE_FOR = 1150;
 
-function storage(area: "local" | "session") {
+function storage() {
   try {
-    return area === "local" ? localStorage : sessionStorage;
+    return localStorage;
   } catch {
     return null;
   }
 }
 
 function pickMotto(count: number) {
-  const store = storage("local");
+  const store = storage();
   const last = Number(store?.getItem(MOTTO_KEY) ?? -1);
   let index = Math.floor(Math.random() * count);
   if (count > 1)
@@ -212,12 +211,11 @@ export function HomeAscii({ mottos }: { mottos: string[] }) {
             float?.remove();
           }
         }
-        if (!contentShown && t >= riseAt + 300) {
+        if (!contentShown && t >= riseAt + RISE_FOR * 0.7) {
           contentShown = true;
           home.dataset.intro = "off";
           for (const p of pieces) if (p !== scene) p.reveal(t + 300, 900);
           nextNote = t + 1800;
-          storage("session")?.setItem(INTRO_KEY, "1");
         }
         if (decoding) {
           const { text, done } = decode(t);
@@ -272,10 +270,11 @@ export function HomeAscii({ mottos }: { mottos: string[] }) {
       };
     };
 
-    const firstIntro =
-      !reduced &&
-      scrollY === 0 &&
-      storage("session")?.getItem(INTRO_KEY) !== "1";
+    const firstIntro = !reduced;
+    if (firstIntro) {
+      history.scrollRestoration = "manual";
+      scrollTo(0, 0);
+    }
     let width = 0;
     let timer = 0;
     const observer = new ResizeObserver(() => {

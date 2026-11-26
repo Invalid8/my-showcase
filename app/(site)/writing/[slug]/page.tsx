@@ -124,9 +124,7 @@ export default async function ArticlePage({
         }
         line={item.description}
       />
-      {body && (
-        <div className="prose-feed">{await renderMarkdown(body)}</div>
-      )}
+      {body && <div className="prose-feed">{await renderMarkdown(body)}</div>}
       <Adjacent
         label="More writing"
         previous={previous && { href: previous.href, title: previous.title }}

@@ -70,7 +70,7 @@ export default async function HomePage() {
       <noscript>
         <style>
           {
-            ".home[data-intro=on] main>section,.home[data-intro=on] .site-footer{opacity:1;transform:none}.home .motto.waiting{visibility:visible}"
+            ".home[data-intro=on] main>section,.home[data-intro=on] .site-footer{opacity:1;transform:none}"
           }
         </style>
       </noscript>
@@ -79,9 +79,7 @@ export default async function HomePage() {
         <Section id="intro">
           <h1 className="name">{person.name}</h1>
           <p className="role">{person.role}</p>
-          <p className="motto waiting" data-motto>
-            {mottos[0]}
-          </p>
+          <p className="motto waiting" data-motto />
           <p>{intro}</p>
           <div className="tools" id="tools">
             {toolGroups.map((group) => (
