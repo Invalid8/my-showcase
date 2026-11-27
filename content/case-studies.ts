@@ -272,15 +272,12 @@ export const caseStudies: CaseStudy[] = [
         body: "Every line starts with the second it was said. Click it and the note plays from there, and the line being spoken stays lit while it plays. Starting one note pauses every other. You can listen while a note is still transcribing, and when the text arrives and the card redraws, playback carries on from the same second instead of stopping.",
       },
       {
-        type: "image",
-        wide: true,
-        image: {
-          src: "/work/vscrybe/note-live-line.png",
-          alt: "A transcribed note playing from 0:18, with that line highlighted",
-          width: 1696,
-          height: 946,
-        },
-        caption: "Clicked 0:18. The line stays lit while it plays.",
+        type: "loop",
+        src: "/work/vscrybe/listen-loop.mp4",
+        poster: "/work/vscrybe/listen-loop.jpg",
+        label:
+          "A transcribed note: the 0:20 timestamp is clicked, the note plays from there, and the lit line moves to 0:22 as the voice reaches it",
+        caption: "Clicked 0:20. The lit line follows the voice.",
       },
       {
         type: "text",
@@ -288,16 +285,13 @@ export const caseStudies: CaseStudy[] = [
         body: "Files you add wait in a tray above the composer until you press Send. Listen to one first, remove it, or add the same file twice and be told it's already there. The tray lives in the browser's IndexedDB, so it's still there after a restart. I dropped the \"Adding N voice notes\" overlay: the copies are local and finish almost at once, so it only flashed on screen.",
       },
       {
-        type: "image",
-        wide: true,
-        image: {
-          src: "/work/vscrybe/tray-waiting.png",
-          alt: "Two files waiting in the tray above the composer, the first playing as a preview",
-          width: 1654,
-          height: 314,
-        },
+        type: "loop",
+        src: "/work/vscrybe/tray-loop.mp4",
+        poster: "/work/vscrybe/tray-loop.jpg",
+        label:
+          "Two voice notes land in the tray above the composer, the first is played as a preview and stopped, then Send empties the tray",
         caption:
-          "Two waiting, the first playing as a preview. Both are still here after a restart.",
+          "Two waiting, the first played as a preview, then Send. Until then, nothing is transcribed.",
       },
       {
         type: "text",
