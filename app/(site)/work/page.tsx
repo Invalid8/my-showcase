@@ -11,6 +11,7 @@ export const metadata: Metadata = createPageMetadata({
   description:
     "Products I started and built end to end, and client work: what each one is, why it exists and what I did.",
   path: "/work",
+  image: null,
 });
 
 const groups: { origin: WorkEntry["origin"]; label: string }[] = [
