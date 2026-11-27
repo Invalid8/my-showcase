@@ -123,9 +123,11 @@ export default async function HomePage() {
 
         <Section id="work" label="Work">
           <div className="stack">
-            {work.map((entry) => (
-              <WorkItem key={entry.slug} work={entry} />
-            ))}
+            {work
+              .filter((entry) => !entry.href)
+              .map((entry) => (
+                <WorkItem key={entry.slug} work={entry} />
+              ))}
           </div>
         </Section>
 

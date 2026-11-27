@@ -12,7 +12,10 @@ export function WorkItem({ work }: { work: WorkEntry }) {
         width={18}
         height={18}
       />
-      <TextLink href={`/work/${work.slug}`} arrow="forward">
+      <TextLink
+        href={work.href ?? `/work/${work.slug}`}
+        arrow={work.href ? "external" : "forward"}
+      >
         {work.name}
       </TextLink>
       <p>{work.description}</p>

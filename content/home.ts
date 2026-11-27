@@ -114,6 +114,18 @@ export const work: WorkEntry[] = [
     meta: "2026 · design and engineering · Next.js, Konva",
   },
   {
+    slug: "cosmic-recorder",
+    name: "Cosmic Recorder",
+    icon: "/icons/recorder.png",
+    description:
+      "A screen recorder for the COSMIC desktop: a floating dock above every workspace, full screen or a region you drag out, microphone and system audio mixed, straight to MP4.",
+    origin: "mine",
+    story:
+      "One executable and no service: a pidfile and Unix signals, so stopping a recording you can't see works the same from Super+Shift+S, a terminal, the panel applet and the tray. It hides itself and counts down so it is never in the video, ignores a second press while it saves so an impatient double-click can't throw the file away, and refuses a region drawn on one display but granted on another rather than crop the wrong pixels.",
+    meta: "Jul – Nov 2026 · design and engineering · Rust, iced, GStreamer",
+    href: "https://github.com/Invalid8/cosmic-recorder",
+  },
+  {
     slug: "waysdrop",
     name: "Waysdrop",
     icon: "/icons/waysdrop.png",

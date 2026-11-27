@@ -1260,6 +1260,110 @@ a.chip:hover::after {
   color: var(--text-faint);
 }
 
+.counter-demo {
+  display: grid;
+  justify-items: center;
+  gap: 28px;
+  padding: 44px 24px 26px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.counter {
+  display: flex;
+  gap: 3px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg);
+  box-shadow:
+    inset 0 2px 6px rgb(0 0 0 / 0.45),
+    0 1px 0 rgb(255 255 255 / 0.04);
+  font:
+    500 64px / 1 var(--font-inter),
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  cursor: ns-resize;
+  touch-action: none;
+  user-select: none;
+}
+
+.counter-window {
+  position: relative;
+  width: 0.74em;
+  height: 1.62em;
+  overflow: hidden;
+  border-radius: 7px;
+  background: linear-gradient(
+    var(--bg),
+    var(--surface) 38%,
+    var(--surface) 62%,
+    var(--bg)
+  );
+  transition: opacity 320ms ease-out;
+}
+
+.counter-window:first-child {
+  border-radius: 9px 7px 7px 9px;
+}
+
+.counter-window:last-child {
+  border-radius: 7px 9px 9px 7px;
+}
+
+.counter-window[data-unlit="true"] {
+  opacity: 0.38;
+}
+
+.counter-window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    var(--bg) 4%,
+    transparent 30%,
+    transparent 70%,
+    var(--bg) 96%
+  );
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.03);
+}
+
+.counter-blur {
+  position: absolute;
+  inset: 0;
+}
+
+.counter-drum {
+  position: absolute;
+  inset: 0;
+  perspective: 5em;
+  transform-style: preserve-3d;
+}
+
+.counter-drum span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  backface-visibility: hidden;
+  opacity: 0;
+}
+
+.counter-drum span:first-child {
+  opacity: 1;
+}
+
+.counter-filters {
+  position: absolute;
+}
+
+.counter-controls {
+  display: flex;
+  gap: 20px;
+}
+
 .demo-stage {
   position: relative;
   border: 1px solid var(--line);

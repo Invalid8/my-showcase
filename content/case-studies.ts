@@ -13,6 +13,7 @@ export type Block =
   | {
       type: "loop";
       src: string;
+      narrow?: string;
       poster: string;
       label: string;
       caption: string;

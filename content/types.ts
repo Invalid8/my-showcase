@@ -17,6 +17,7 @@ export type WorkEntry = {
   origin: "mine" | "client";
   story: string;
   meta: string;
+  href?: string;
 };
 
 export type Contact = {

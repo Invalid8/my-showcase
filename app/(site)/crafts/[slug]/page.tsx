@@ -7,6 +7,7 @@ import { RopeDemo } from "@/components/ascii/RopeDemo";
 import { SpinningTurntable } from "@/components/ascii/SpinningTurntable";
 import { Blocks } from "@/components/blocks/Blocks";
 import { ZoomImage } from "@/components/blocks/ZoomImage";
+import { Counter } from "@/components/crafts/Counter";
 import MusicPlayer from "@/components/shared/MusicPlayer";
 import { getPlaylist } from "@/components/shared/MusicPlayer/playlist";
 import { Adjacent } from "@/components/site/Adjacent";
@@ -59,6 +60,7 @@ export default async function CraftPage({
     rope: <RopeDemo />,
     turntable: <SpinningTurntable />,
     motto: <MottoDemo lines={mottos} />,
+    counter: <Counter />,
     drawer: (
       <div className="states">
         {drawerStates.map((state) => (

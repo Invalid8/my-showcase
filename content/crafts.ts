@@ -10,6 +10,26 @@ export type Craft = {
   blocks: Block[];
 };
 
+const drumCode = `digits.current[place]?.forEach((span, digit) => {
+  const delta = ((digit - position + 15) % 10) - 5;
+  const angle = delta * STEP;
+  const facing = Math.cos((angle * Math.PI) / 180);
+  span.style.opacity =
+    Math.abs(angle) >= 90 ? "0" : String(0.12 + 0.88 * facing ** 2);
+  span.style.transform = \`translateZ(\${-radius}px) rotateX(\${-angle}deg) translateZ(\${radius}px)\`;
+});`;
+
+const blurCode = `let moved = Math.abs(position - last[place]);
+if (moved > 5) moved = 10 - moved;
+const speed = (moved / dt) * 1000;
+blurs.current[place]?.setAttribute(
+  "stdDeviation",
+  \`0 \${still ? 0 : Math.min(7, speed * 0.05).toFixed(2)}\`,
+);
+
+const durationFor = (distance: number) =>
+  Math.min(2600, 420 + 520 * Math.log10(distance + 1));`;
+
 const pointCode = `const ruler = root.querySelector<HTMLElement>('[data-agent="ruler"]');
 const pixelsPerFrame = Number(ruler.dataset.pixelsPerFrame);
 const along = ruler.getBoundingClientRect();
@@ -271,6 +291,7 @@ export const crafts: Craft[] = [
       {
         type: "loop",
         src: "/crafts/agent-cursor/agent-cursor.mp4",
+        narrow: "/crafts/agent-cursor/agent-cursor-phone.mp4",
         poster: "/crafts/agent-cursor/agent-cursor.jpg",
         label:
           "Claude Code editing a Cosmic Studio project over MCP: its cursor glides to the ruler for a seek, the cut frame for a split, the clip's edge for a trim, the keyframe, then the title on the canvas",
@@ -327,60 +348,69 @@ export const crafts: Craft[] = [
   },
   {
     slug: "count-up",
-    title: "A count-up in three versions",
+    title: "A counter that turns",
     blurb:
-      "Fefys counts up meals cooked and weeks planned. Three versions in forty minutes: text that changed, my own odometer wheels, then knowing when to hand it to NumberFlow.",
-    tags: ["React Native", "Motion"],
-    line: "Nothing should shift while a number counts.",
+      "My own count-up, modelled on a mechanical counter: drums that carry like a real one, blur at speed and coast when you flick them. It grew out of a version I wrote for Fefys.",
+    tags: ["Motion", "Web"],
+    line: "Drums, not digits.",
     intro:
-      "Three versions of the same small component, side by side, and what each one taught me.",
+      "A count-up built the way a real counter is: one drum per place. Play with it.",
     blocks: [
       {
-        type: "loop",
-        src: "/crafts/count-up/count-up.mp4",
-        poster: "/crafts/count-up/count-up.jpg",
-        label:
-          "Three versions of the Fefys count-up fed the same numbers, 7, 12, 98, 104, 999, 1,000 and 12,480: the first jumps to each value, the second rolls digit wheels with gaps between them, the third rolls and grows its width as digits arrive",
-        caption: "All three versions, fed the same numbers.",
+        type: "demo",
+        id: "counter",
+        caption: "Drag it, flick it, or press a button.",
       },
       {
         type: "text",
-        heading: "Three versions in forty minutes",
-        body: "Fefys celebrates with numbers: meals cooked, a week planned, everything bought. Each one counts up. It took three versions, forty minutes apart, to get a count-up I'd let near a celebration.",
+        heading: "Where it came from",
+        body: "Fefys celebrates with numbers, and in November I went through three versions of its count-up in forty minutes. The app shipped the third, built on a library, which was the right call for an app with a deadline. The one I kept thinking about was the second: an odometer I wrote myself, with a wheel for every digit and a carry that worked like a real one. It had faults I didn't have time for then. This is that idea, finished.",
       },
       {
         type: "text",
-        heading: "Text that changes",
-        body: "The first animated the text of a read-only TextInput from a worklet, the usual trick for drawing a number every frame without re-rendering. With tabular figures the digits at least kept their width, but the number grew a character at a time and dragged everything beside it along. On Android it did worse: it jumped straight to the final value.",
-      },
-      {
-        type: "text",
-        heading: "A wheel per digit",
-        body: "The second was my own odometer. Every place is a wheel of eleven digits, 0 to 9 and 0 again, in a slot exactly as wide as a measured 0, so nothing can shift sideways. The part I liked is the carry: a wheel above the units only turns during the last step of the place below it, the way a real odometer's tens drum waits for the units to come round.",
+        heading: "Drums, not digits",
+        body: "A real counter doesn't slide digits in and out. Each place is a drum, a short cylinder with 0 to 9 printed around it, and you see the face that's turned towards you through a window. So that's what this draws. Every frame, each of the ten digits on a drum is rotated to its place on the cylinder, 36 degrees apart, around an axis set back behind the window, so the digit facing you is drawn at its true size and the others shrink as they curve away. A digit fades with the square of how directly it faces you, so the ones curving away darken the way printed numbers do on a real drum, and the window's top and bottom edges fade into shadow.",
       },
       {
         type: "code",
-        file: "src/lib/count.ts",
-        lang: "ts",
-        code: "export function wheelPosition(shown: number, place: number) {\n  'worklet';\n  const unit = 10 ** place;\n  if (place === 0) return shown % 10;\n  const base = Math.floor(shown / unit) % 10;\n  const lower = shown % unit;\n  const carry = Math.max(0, lower - (unit - 1));\n  return base + carry;\n}",
-        caption:
-          "From the version in commit be6d98f. With shown at 129.4, the units wheel sits at 9.4 and the tens wheel at 2.4: it's already rolling towards 3.",
-      },
-      {
-        type: "text",
-        heading: "What the wheels got wrong",
-        body: "It never shifted, but on the phone it had its own faults. A slot as wide as a 0 leaves a 1 floating in space. Places the number hasn't reached yet were only hidden, so they kept their room and left a gap in front. The comma sat on a different line from the digits. Fixing all of that meant building a text layout engine for numbers.",
-      },
-      {
-        type: "text",
-        heading: "Knowing when to stop",
-        body: "So the third version is NumberFlow, which does exactly that: every digit rolls, the width animates as digits arrive or leave, and the edges fade so the roll reads as motion, not a cut. My part shrank to what the app owns: the type scale, tabular figures, the weight-matched font file, and starting from a number one frame after mount so it always visibly counts. Forty minutes of building my own taught me precisely what I needed, which is the only reason I knew what to reach for.",
-      },
-      {
-        type: "code",
-        file: "src/components/motion/CountUp.tsx",
+        file: "components/crafts/Counter.tsx",
         lang: "tsx",
-        code: "export function CountUp({ value, from = 0, variant = 'display', tone = 'ink', prefix, suffix, continuous = true, weight }: CountUpProps) {\n  const { colors } = useTheme();\n  const [shown, setShown] = useState(from);\n  const type = Type[variant];\n\n  useEffect(() => {\n    const frame = requestAnimationFrame(() => setShown(value));\n    return () => cancelAnimationFrame(frame);\n  }, [value]);\n\n  return (\n    <NumberFlow\n      value={shown}\n      locales=\"en\"\n      prefix={prefix}\n      suffix={suffix}\n      continuous={continuous}\n      style={{\n        fontSize: type.fontSize,\n        fontFamily: familyForWeight(weight ?? type.fontWeight),\n        fontVariant: ['tabular-nums'],\n        letterSpacing: type.letterSpacing,\n        color: colors[tone],\n      }}\n    />\n  );\n}",
+        code: drumCode,
+      },
+      {
+        type: "text",
+        heading: "The carry",
+        body: "The carry is the function from Fefys, unchanged. A drum above the units only turns during the last tenth of the drum below it, the way a real odometer's tens wheel waits for the units to come round. Go from 1,299 to 1,300 and the tens and hundreds drums sit still until the units pass 9, then all three roll over together.",
+      },
+      {
+        type: "code",
+        file: "components/crafts/Counter.tsx",
+        lang: "ts",
+        code: "export function wheelPosition(shown: number, place: number) {\n  const unit = 10 ** place;\n  if (place === 0) return shown % 10;\n  const base = Math.floor(shown / unit) % 10;\n  const lower = shown % unit;\n  const carry = Math.max(0, lower - (unit - 1));\n  return base + carry;\n}",
+        caption:
+          "With 129.4 showing, the units drum is at 9.4 and the tens drum at 2.4: already rolling towards 3.",
+      },
+      {
+        type: "text",
+        heading: "Speed you can see",
+        body: "Each drum gets its own blur, vertical only, sized by how fast that drum is turning right now. A big jump smears the units into a streak while the thousands barely move; a +1 stays sharp. How long a move takes grows with the size of the change rather than in proportion to it, so one step is quick and a jump of sixty thousand takes its time without dragging, and every move eases out to rest with no overshoot.",
+      },
+      {
+        type: "code",
+        file: "components/crafts/Counter.tsx",
+        lang: "ts",
+        code: blurCode,
+      },
+      {
+        type: "text",
+        heading: "In your hand",
+        body: "Drag it and the units drum follows your finger, one drum height per number, with the carries rippling up as you go. Let go and it keeps a third of a second of your speed, coasts and settles on a whole number, never between two. The drums never change size and the leading zeros stay, just dimmed, so the number never shifts while it counts. For anyone who prefers reduced motion, it goes straight to the number.",
+      },
+      {
+        type: "code",
+        file: "components/crafts/Counter.tsx",
+        lang: "tsx",
+        code: "const onPointerUp = () => {\n  if (!drag.current) return;\n  const { speed } = drag.current;\n  drag.current = null;\n  const coast = speed * FLICK_PROJECTION;\n  goTo(shown.current + coast, 380 + Math.min(1600, Math.abs(coast) * 60));\n};",
       },
     ],
   },

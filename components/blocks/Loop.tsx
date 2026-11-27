@@ -6,10 +6,12 @@ export function Loop({
   src,
   poster,
   label,
+  narrow,
   phone,
   width,
 }: {
   src: string;
+  narrow?: string;
   poster: string;
   label: string;
   phone?: boolean;
@@ -49,7 +51,7 @@ export function Loop({
       <div className="loop-screen">
         <video
           ref={video}
-          src={src}
+          src={narrow ? undefined : src}
           poster={poster}
           aria-label={label}
           muted
@@ -58,7 +60,14 @@ export function Loop({
           preload="metadata"
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
-        />
+        >
+          {narrow && (
+            <>
+              <source src={narrow} media="(max-width: 720px)" />
+              <source src={src} />
+            </>
+          )}
+        </video>
         {!playing && (
           <button
             type="button"

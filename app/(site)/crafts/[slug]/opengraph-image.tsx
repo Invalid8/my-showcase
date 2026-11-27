@@ -32,6 +32,8 @@ async function accent(slug: string) {
     }
     case "heart":
       return <span style={{ fontSize: 120, color: "#e5484d" }}>♥</span>;
+    case "count-up":
+      return <Ascii lines={["01284"]} size={88} />;
     case "motto":
       return <Ascii lines={["Mxqtpj ezvhe I wkvhgd ql eyfsa."]} size={28} />;
     default:

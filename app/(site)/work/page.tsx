@@ -47,7 +47,10 @@ export default function WorkPage() {
                     width={18}
                     height={18}
                   />
-                  <TextLink href={`/work/${entry.slug}`} arrow="forward">
+                  <TextLink
+                    href={entry.href ?? `/work/${entry.slug}`}
+                    arrow={entry.href ? "external" : "forward"}
+                  >
                     {entry.name}
                   </TextLink>
                   <p>{entry.story}</p>

@@ -112,6 +112,7 @@ export function Blocks({
           <Figure key={key} n={fig} caption={block.caption}>
             <Loop
               src={block.src}
+              narrow={block.narrow}
               poster={block.poster}
               label={block.label}
               phone={block.phone}
