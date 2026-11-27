@@ -11,9 +11,13 @@ export const alt = "Craft";
 
 async function accent(slug: string) {
   switch (slug) {
-    case "drawer": {
+    case "drawer":
+    case "agent-cursor": {
       const icon = await readFile(
-        join(process.cwd(), "public/icons/baseband.png"),
+        join(
+          process.cwd(),
+          `public/icons/${slug === "drawer" ? "baseband" : "cosmic"}.png`,
+        ),
       );
       return (
         // biome-ignore lint/performance/noImgElement: ImageResponse renders plain img

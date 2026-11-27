@@ -396,8 +396,7 @@ export const caseStudies: CaseStudy[] = [
             height: 1680,
           },
         ],
-        caption:
-          "The hub in April, captured from my phone, and as redrawn in September.",
+        caption: "The hub in April, and as redrawn in September.",
       },
       {
         type: "text",
@@ -618,8 +617,7 @@ export const caseStudies: CaseStudy[] = [
         poster: "/work/fillyr/sample-v2.jpg",
         label:
           "The Fillyr editor: sampling gold from the flyer's ring for the name, then centring and bolding it",
-        caption:
-          "Sampling the ring's gold for the name, then centring it. Recorded in the real editor.",
+        caption: "Sampling the ring's gold for the name, then centring it.",
       },
       {
         type: "text",

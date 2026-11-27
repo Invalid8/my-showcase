@@ -10,6 +10,15 @@ export type Craft = {
   blocks: Block[];
 };
 
+const pointCode = `const ruler = root.querySelector<HTMLElement>('[data-agent="ruler"]');
+const pixelsPerFrame = Number(ruler.dataset.pixelsPerFrame);
+const along = ruler.getBoundingClientRect();
+const view = (ruler.closest('.filmstrip__scroll') ?? ruler).getBoundingClientRect();
+const x = clamp(along.left + aim.frame * pixelsPerFrame, view.left, view.left + view.width);
+if (aim.kind === 'ruler') return { x, y: centre(along).y };
+const lane = root.querySelector(\`[data-lane="\${quoted(aim.trackId)}"]\`);
+return lane ? { x, y: centre(lane.getBoundingClientRect()).y } : undefined;`;
+
 const heartCode = `const drift = (Math.random() - 0.5) * 90;
 const rise = 70 + Math.random() * 70;
 const size = 0.6 + Math.random() * 0.7;
@@ -246,6 +255,198 @@ export const crafts: Craft[] = [
         type: "text",
         heading: "Honest states",
         body: "While the address is being checked, Cancel is disabled, so the backdrop, the drag and Android's back button refuse too; nothing gets a way out that the visible button doesn't. Each check gets a number, and an answer that comes back for an older one is ignored. The button itself is the same pill the whole time: grey until the text is a valid address, a spinner while it checks, then Try again. The error says what happened, with the address and how long it waited. VoiceOver's escape gesture closes the drawer, and under reduced motion it fades instead of travelling.",
+      },
+    ],
+  },
+  {
+    slug: "agent-cursor",
+    title: "A cursor for the agent",
+    blurb:
+      "When an AI agent edits a project in Cosmic Studio, a named cursor glides to the place a person would have used for the same edit, rings once, and dims when the agent rests.",
+    tags: ["Desktop", "Agents"],
+    line: "So you see the hand, not only the result.",
+    intro:
+      "Cosmic Studio, my video editor, can be driven by agents. This is how you can tell where they are.",
+    blocks: [
+      {
+        type: "loop",
+        src: "/crafts/agent-cursor/agent-cursor.mp4",
+        poster: "/crafts/agent-cursor/agent-cursor.jpg",
+        label:
+          "Claude Code editing a Cosmic Studio project over MCP: its cursor glides to the ruler for a seek, the cut frame for a split, the clip's edge for a trim, the keyframe, then the title on the canvas",
+        caption:
+          "Claude Code driving Cosmic Studio over MCP: a seek, a split, a trim, a keyframe, then a move on the canvas.",
+      },
+      {
+        type: "text",
+        heading: "Seeing the hand, not only the result",
+        body: "Cosmic Studio is a video editor that agents can drive over MCP. An agent edits faster than anyone can read a timeline, and without something on screen the only account of its work is that the project looks different from a moment ago. That is the kind of thing that makes people stop trusting a tool. So the agent gets a cursor, with its name on it, and the cursor goes where a person's hand would have gone.",
+      },
+      {
+        type: "text",
+        heading: "Where a person would do it",
+        body: "Every tool call the agent makes comes back to the window as an event: who called it, which tool, the arguments and the result. A single function turns that into an aim. A split points at the exact frame of the cut on that clip's lane, a trim at the clip's front edge, a new duration at its end, a keyframe at its frame, a seek or a marker at the ruler, and Save, Export, Undo or a track toggle at that control. Sixty-nine tools map this way. One that has no place a person would touch, like reading the project, moves nothing.",
+      },
+      {
+        type: "code",
+        file: "src/editor/agent-cursor.ts",
+        lang: "ts",
+        code: "export function aimFor(work: Working, project: Project, before: Project, playhead: number): Aim | undefined {\n  const a = work.arguments, r = work.result;\n  const control = CONTROLS[work.tool];\n  if (control) return { kind: 'control', name: control };\n  const found = (clipId: string) => locate(project, clipId) ?? locate(before, clipId);\n  …\n  switch (work.tool) {\n    case 'split_clip': return onClip(a.clipId, start => start + a.atFrameOffset);\n    case 'trim_clip_start': return onClip(a.clipId, start => start);\n    case 'set_clip_duration': return onClip(a.clipId, (start, duration) => start + duration);\n    case 'add_keyframe': return onClip(a.clipId, () => a.frame);\n    case 'roll_cut': return onClip(a.clipId, (start, duration) => start + duration);\n    case 'add_marker': return { kind: 'ruler', frame: a.frame };\n    case 'set_clip_properties': return { kind: 'canvas', clipId: a.clipId, frame: a.frame };\n    case 'seek': return { kind: 'ruler', frame: a.frame };\n    …\n  }\n}",
+        caption:
+          "Excerpt, trimmed with …. Clips are looked up in the project before the edit too, so a removed clip can still be pointed at.",
+      },
+      {
+        type: "text",
+        heading: "Pointing at real pixels",
+        body: "Frames become screen points through the ruler, which carries its own pixels-per-frame, so the aim stays right at any zoom, and the point is clamped to the part of the timeline in view. For edits on the canvas, the window asks the Rust core for that clip's quad at that frame, after its keyframes, so the cursor lands on the clip where it actually is, tilted or scaled. Buttons only need a data-agent name; nothing threads a ref through the app for a feature that usually draws nothing.",
+      },
+      {
+        type: "code",
+        file: "src/editor/agent-cursor.ts",
+        lang: "ts",
+        code: pointCode,
+      },
+      {
+        type: "text",
+        heading: "Glide, ring, rest",
+        body: "The cursor glides for 900 ms on a soft ease-out. The ring that marks the arrival waits 650 ms before it starts, so it opens just as the arrow lands, not while it's still travelling. Eight seconds after the last call the cursor dims to a third: an agent can stop mid-task, or lose its connection, without ever saying it's finished, and the editor must not look occupied forever. With reduced motion, it moves without the glide or the ring.",
+      },
+      {
+        type: "code",
+        file: "src/styles/editor.css",
+        lang: "css",
+        code: ".agent-cursor {\n  position: fixed;\n  z-index: 60;\n  pointer-events: none;\n  transform: translate(var(--agent-x), var(--agent-y));\n  transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1), opacity 400ms ease;\n}\n.agent-cursor.is-resting { opacity: 0.35; }\n.agent-cursor__ring {\n  border: 2px solid var(--agent);\n  opacity: 0;\n  animation: agent-arrive 700ms 650ms cubic-bezier(0.22, 1, 0.36, 1);\n}\n@keyframes agent-arrive {\n  from { transform: scale(0.4); opacity: 0.9; }\n  to { transform: scale(1.3); opacity: 0; }\n}\n@media (prefers-reduced-motion: reduce) {\n  .agent-cursor { transition: opacity 400ms ease; }\n  .agent-cursor__ring { animation: none; }\n}",
+        caption: "Excerpt.",
+      },
+      {
+        type: "text",
+        heading: "Where it started",
+        body: "The first version, in Cosmic Editor, announced each tool before it ran rather than after, because a long import is exactly when someone wonders what is happening. Each agent got its own colour, hashed from the name it gives when it connects, so the same agent is the same colour every session and two at once never collide, and none of them borrowed the app's lime, which already meant selected. It sat above every dialog, because an agent working while a dialog is open is when a person most needs to see it. Studio rebuilt it around where a person would act, which is what makes it read as a hand and not a highlight.",
+      },
+    ],
+  },
+  {
+    slug: "count-up",
+    title: "A count-up in three versions",
+    blurb:
+      "Fefys counts up meals cooked and weeks planned. Three versions in forty minutes: text that changed, my own odometer wheels, then knowing when to hand it to NumberFlow.",
+    tags: ["React Native", "Motion"],
+    line: "Nothing should shift while a number counts.",
+    intro:
+      "Three versions of the same small component, side by side, and what each one taught me.",
+    blocks: [
+      {
+        type: "loop",
+        src: "/crafts/count-up/count-up.mp4",
+        poster: "/crafts/count-up/count-up.jpg",
+        label:
+          "Three versions of the Fefys count-up fed the same numbers, 7, 12, 98, 104, 999, 1,000 and 12,480: the first jumps to each value, the second rolls digit wheels with gaps between them, the third rolls and grows its width as digits arrive",
+        caption: "All three versions, fed the same numbers.",
+      },
+      {
+        type: "text",
+        heading: "Three versions in forty minutes",
+        body: "Fefys celebrates with numbers: meals cooked, a week planned, everything bought. Each one counts up. It took three versions, forty minutes apart, to get a count-up I'd let near a celebration.",
+      },
+      {
+        type: "text",
+        heading: "Text that changes",
+        body: "The first animated the text of a read-only TextInput from a worklet, the usual trick for drawing a number every frame without re-rendering. With tabular figures the digits at least kept their width, but the number grew a character at a time and dragged everything beside it along. On Android it did worse: it jumped straight to the final value.",
+      },
+      {
+        type: "text",
+        heading: "A wheel per digit",
+        body: "The second was my own odometer. Every place is a wheel of eleven digits, 0 to 9 and 0 again, in a slot exactly as wide as a measured 0, so nothing can shift sideways. The part I liked is the carry: a wheel above the units only turns during the last step of the place below it, the way a real odometer's tens drum waits for the units to come round.",
+      },
+      {
+        type: "code",
+        file: "src/lib/count.ts",
+        lang: "ts",
+        code: "export function wheelPosition(shown: number, place: number) {\n  'worklet';\n  const unit = 10 ** place;\n  if (place === 0) return shown % 10;\n  const base = Math.floor(shown / unit) % 10;\n  const lower = shown % unit;\n  const carry = Math.max(0, lower - (unit - 1));\n  return base + carry;\n}",
+        caption:
+          "From the version in commit be6d98f. With shown at 129.4, the units wheel sits at 9.4 and the tens wheel at 2.4: it's already rolling towards 3.",
+      },
+      {
+        type: "text",
+        heading: "What the wheels got wrong",
+        body: "It never shifted, but on the phone it had its own faults. A slot as wide as a 0 leaves a 1 floating in space. Places the number hasn't reached yet were only hidden, so they kept their room and left a gap in front. The comma sat on a different line from the digits. Fixing all of that meant building a text layout engine for numbers.",
+      },
+      {
+        type: "text",
+        heading: "Knowing when to stop",
+        body: "So the third version is NumberFlow, which does exactly that: every digit rolls, the width animates as digits arrive or leave, and the edges fade so the roll reads as motion, not a cut. My part shrank to what the app owns: the type scale, tabular figures, the weight-matched font file, and starting from a number one frame after mount so it always visibly counts. Forty minutes of building my own taught me precisely what I needed, which is the only reason I knew what to reach for.",
+      },
+      {
+        type: "code",
+        file: "src/components/motion/CountUp.tsx",
+        lang: "tsx",
+        code: "export function CountUp({ value, from = 0, variant = 'display', tone = 'ink', prefix, suffix, continuous = true, weight }: CountUpProps) {\n  const { colors } = useTheme();\n  const [shown, setShown] = useState(from);\n  const type = Type[variant];\n\n  useEffect(() => {\n    const frame = requestAnimationFrame(() => setShown(value));\n    return () => cancelAnimationFrame(frame);\n  }, [value]);\n\n  return (\n    <NumberFlow\n      value={shown}\n      locales=\"en\"\n      prefix={prefix}\n      suffix={suffix}\n      continuous={continuous}\n      style={{\n        fontSize: type.fontSize,\n        fontFamily: familyForWeight(weight ?? type.fontWeight),\n        fontVariant: ['tabular-nums'],\n        letterSpacing: type.letterSpacing,\n        color: colors[tone],\n      }}\n    />\n  );\n}",
+      },
+    ],
+  },
+  {
+    slug: "tab-bar",
+    title: "A tab bar that becomes search",
+    blurb:
+      "Two glass shapes in the Fefys tab bar: a pill that stretches as it slides, labels that light as it passes, and a morph into search that rides the keyboard only when it should.",
+    tags: ["React Native", "Motion"],
+    line: "Two shapes, swapping widths.",
+    intro:
+      "The bar at the bottom of Fefys, and the one morph that turns it into search.",
+    blocks: [
+      {
+        type: "loop",
+        src: "/crafts/tab-bar/tab-bar.mp4",
+        poster: "/crafts/tab-bar/tab-bar.jpg",
+        label:
+          "The Fefys tab bar on an Android phone: the pill slides across Explore, Plan and List and back to Today, then the bar morphs into a Home circle and a search field, the keyboard opens and the bar rides it while jollof is typed, then it closes back into tabs",
+        caption: "Tabs, then search, then back.",
+        phone: true,
+      },
+      {
+        type: "text",
+        heading: "Two shapes",
+        body: "Fefys has four tabs and a search, and search lives in the tab bar, not in a field on every screen. So the bar is two glass shapes floating over the content: a capsule with the tabs, and a circle with a magnifying glass. Everything it does is those two shapes changing.",
+      },
+      {
+        type: "text",
+        heading: "A pill that stretches",
+        body: "The pill under the active tab slides in 340 ms, and on its way it stretches: to 1.22 times its width over the first third of the trip, then back. It reads as a drop of something sliding, without the overshoot a spring would add. The first placement doesn't animate at all, so opening the app never shows a pill sliding in from nowhere. Changing tab gives a haptic tap when haptics are on; pressing the tab you're already on gives none, because nothing happened.",
+      },
+      {
+        type: "code",
+        file: "src/components/ui/TabBar.tsx",
+        lang: "tsx",
+        code: "x.set(withTiming(target, { duration: SLIDE, easing: EASE_OUT }));\nstretch.set(\n  withSequence(\n    withTiming(1.22, { duration: SLIDE * 0.35, easing: EASE_OUT }),\n    withTiming(1, { duration: SLIDE * 0.65, easing: EASE_OUT }),\n  ),\n);",
+      },
+      {
+        type: "text",
+        heading: "Labels that light as it passes",
+        body: "Each label takes its colour from how close the pill is to it, not from which tab is selected. Slide from Today to List and Explore and Plan light up as the pill passes under them and dim as it leaves, so the bar says where the pill is at every frame, not only where it's going.",
+      },
+      {
+        type: "code",
+        file: "src/components/ui/TabBar.tsx",
+        lang: "tsx",
+        code: "const label = useAnimatedStyle(() => {\n  const near = Math.max(0, 1 - Math.abs(x.get() - order * restStep) / TAB.width);\n  return {\n    color: interpolateColor(near, [0, 1], [colors.mute, colors.ink]),\n    opacity: 1 - Math.min(1, morph.get() * 4),\n  };\n});",
+      },
+      {
+        type: "text",
+        heading: "One morph, no new pieces",
+        body: "Tap search and the two shapes trade widths over 460 ms: the capsule shrinks into a circle and the circle grows into the field. Nothing new appears. As the capsule narrows, the tab slots squeeze their spacing to match and fade out right to left, List first and Today last, each one shrinking a little as it goes. Once they've gone, a house fades in as the Home button in the circle that's left, the magnifying glass glides to the field's left edge, and the field fades in for the second half.",
+      },
+      {
+        type: "text",
+        heading: "It rides the keyboard, only when it should",
+        body: "The bar only rides the keyboard while it's searching. Its lift is the keyboard's height multiplied by the morph, so on any other screen a keyboard opens under a bar that stays put, and during the morph the two move together. The keyboard itself waits for a tap on the field instead of jumping up the moment search opens, and closing search with the Home circle puts it away.",
+      },
+      {
+        type: "code",
+        file: "src/components/ui/TabBar.tsx",
+        lang: "tsx",
+        code: "const left = useAnimatedStyle(() => ({\n  width: interpolate(morph.get(), [0, 1], [capsuleWide, ROUND]),\n}));\nconst right = useAnimatedStyle(() => ({\n  width: interpolate(morph.get(), [0, 1], [ROUND, capsuleWide]),\n}));\nconst bar = useAnimatedStyle(() => ({\n  transform: [\n    {\n      translateY:\n        morph.get() * Math.min(0, keyboard.height.get() + insets.bottom + FOOTER_GAP - 8),\n    },\n  ],\n}));",
+        caption:
+          "The same two widths, swapped. The lift is zero until morph moves.",
       },
     ],
   },
