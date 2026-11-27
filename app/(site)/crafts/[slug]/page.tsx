@@ -8,6 +8,7 @@ import { SpinningTurntable } from "@/components/ascii/SpinningTurntable";
 import { Blocks } from "@/components/blocks/Blocks";
 import { ZoomImage } from "@/components/blocks/ZoomImage";
 import { Counter } from "@/components/crafts/Counter";
+import { PinSlip } from "@/components/crafts/PinSlip";
 import MusicPlayer from "@/components/shared/MusicPlayer";
 import { getPlaylist } from "@/components/shared/MusicPlayer/playlist";
 import { Adjacent } from "@/components/site/Adjacent";
@@ -61,6 +62,7 @@ export default async function CraftPage({
     turntable: <SpinningTurntable />,
     motto: <MottoDemo lines={mottos} />,
     counter: <Counter />,
+    "pin-slip": <PinSlip />,
     drawer: (
       <div className="states">
         {drawerStates.map((state) => (

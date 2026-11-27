@@ -63,6 +63,60 @@ heart.animate(
   },
 ).finished.then(() => heart.remove());`;
 
+const slipJobCode = `export const RULE = "-".repeat(COLUMNS);
+
+const row = (key: string, value: string) => {
+  ops.push({ kind: "text", x: MARGIN, y: top + BASELINE, text: key });
+  ops.push({
+    kind: "text",
+    x: MARGIN + 10 * CELL,
+    y: top + BASELINE,
+    text: value,
+    bold: true,
+  });
+  top += LINE;
+};
+
+row("CUSTOMER", slip.name.toUpperCase());
+row("ACCOUNT", spaced(slip.accountNumber));`;
+
+const slipClampCode = `for (let pass = 0; pass < 4; pass++)
+  for (let c = 0; c < NX; c++) {
+    if (!pinned[c]) continue;
+    const max = Math.hypot(restU(index) - restU(c), restV(index));
+    const dx = p[0] - pos[c * 3];
+    const dy = p[1] - pos[c * 3 + 1];
+    const dz = p[2] - pos[c * 3 + 2];
+    const d = Math.hypot(dx, dy, dz);
+    if (d > max) {
+      const k = max / d;
+      p[0] = pos[c * 3] + dx * k;
+      p[1] = pos[c * 3 + 1] + dy * k;
+      p[2] = pos[c * 3 + 2] + dz * k;
+    }
+  }`;
+
+const slipTearCode = `const started = pinned.some((p) => !p);
+if (worst < 0 || over < TEAR_START * (started ? 0.4 : 1)) {
+  tearing = Math.max(0, tearing - dt * 4);
+  return;
+}
+tearing += dt * (started ? 70 : 3 + (over - TEAR_START) * 80);
+if (tearing < 1) return;
+tearing = 0;
+pinned[worst] = false;
+inv[worst] = 1;
+if (pinned.every((p) => !p)) setState("torn");`;
+
+const slipLightCode = `float facing = dot(n, uLight);
+float diffuse = clamp(1.0 + 0.62 * (facing - uLight.z), 0.5, 1.06);
+vec3 h = normalize(uLight + v);
+float gloss = pow(max(dot(n, h), 0.0), 70.0) * 0.38;
+float rim = pow(1.0 - max(dot(n, v), 0.0), 5.0) * 0.3;
+float slot = 1.0 - vPin * 0.22 * exp(-(vUv.y - uCut) * uLength / 0.018);
+vec3 base = back ? vec3(0.9, 0.894, 0.875) * paper.a : paper.rgb;
+vec3 lit = base * diffuse * slot + (back ? 0.0 : gloss + rim) * paper.a;`;
+
 export const drawerStates = [
   {
     src: "/crafts/drawer/bb-sheet-open.png",
@@ -411,6 +465,88 @@ export const crafts: Craft[] = [
         file: "components/crafts/Counter.tsx",
         lang: "tsx",
         code: "const onPointerUp = () => {\n  if (!drag.current) return;\n  const { speed } = drag.current;\n  drag.current = null;\n  const coast = speed * FLICK_PROJECTION;\n  goTo(shown.current + coast, 380 + Math.min(1600, Math.abs(coast) * 60));\n};",
+      },
+    ],
+  },
+  {
+    slug: "pin-slip",
+    title: "A PIN slip you can tear off",
+    blurb:
+      "The temporary PIN slip from BAAS, my biometric ATM project, as thermal paper you can handle: it prints out of a slot, bends and sags as you pull it, catches the light, and tears off along the teeth.",
+    tags: ["WebGL", "Motion"],
+    line: "Thermal paper, not a card.",
+    intro:
+      "The slip a BAAS staff desk prints when an account is opened, printed again here so you can pick it up.",
+    blocks: [
+      {
+        type: "text",
+        heading: "Why a slip at all",
+        body: "BAAS is a cardless ATM: you sign in with your account number and a fingerprint or a PIN. When staff open an account or reset a PIN, the server picks four digits, keeps only their hash, and hands the plain PIN to the desk exactly once. The console holds it in memory, never in storage, prints it, and asks staff to confirm the customer has it. Then it forgets it, the audit log records the hand-over, and the PIN is hidden for good. Leaving the page before that warns you, because the PIN can't be shown again. The first time the customer uses a kiosk, it makes them choose their own. A slip of paper is the right object for a secret that should exist once, in one person's hand, so I drew it as one.",
+      },
+      {
+        type: "demo",
+        id: "pin-slip",
+        caption: "Pull it, bend it, tear it off.",
+      },
+      {
+        type: "text",
+        heading: "Printed, not drawn",
+        body: "The first design for the console was a tidy white card with the PIN in rounded boxes, and it looked like nothing a printer makes. A 58 mm thermal printer prints 32 columns of one monospace font, so the slip is laid out on that grid: every line is placed by column, keys pad to ten columns, the dashed rules are exactly 32 dashes so they can never wrap, and the PIN is the same font at three times the size, the way a printer's double-size mode does it. The security band behind the PIN is a hatch of thin printed lines rather than a grey fill. The ink is lighter in one band about two thirds of the way across, where a worn head runs light. The barcode and the reference come from the same two functions the console uses.",
+      },
+      {
+        type: "code",
+        file: "components/crafts/pin-slip/job.ts",
+        lang: "ts",
+        code: slipJobCode,
+        caption: "Excerpt.",
+      },
+      {
+        type: "text",
+        body: "That layout is a print job, a list of text, logo, band and bar operations, and two small renderers read it. One writes an SVG that the server sends with the page, so without JavaScript, on a slow connection, or with reduced motion on, you get the slip at rest and nothing else. The other paints the same job onto a canvas at the resolution it will be shown at, and that becomes the texture on the paper.",
+      },
+      {
+        type: "text",
+        heading: "Paper that bends but doesn't stretch",
+        body: "The paper is a grid of 15 by 41 points, stepped 120 times a second. Links between neighbours hold its length, diagonal links hold its shape, and links that skip one and three points resist bending, which is the difference between paper that rolls into a loop and paper that crumples like cloth. Air pushes back on whatever part of the sheet moves face first, so it sags and drifts rather than swinging like a rope. While it's still attached, each point is tied to its column at the slot and can never be further from it than the paper is long. Your hand gets the same rule: whatever point you grab can only go as far as the paper allows from every column still held by the printer, so it goes taut and stops instead of stretching.",
+      },
+      {
+        type: "code",
+        file: "components/crafts/pin-slip/engine.ts",
+        lang: "ts",
+        code: slipClampCode,
+        caption: "Where your hand can take the point it's holding.",
+      },
+      {
+        type: "text",
+        heading: "Tearing along the teeth",
+        body: "The distance your hand is past that limit is the pull. The column under the most pull is where the tear starts, and only once that pull passes a tenth of the slip's width, so a nudge never tears it and a tug does. Starting is the hard part: the first column needs a firm pull held for a moment. After that the tear runs, a column at a time, towards the other edge in about a fifth of a second, the way a real slip rips once the teeth have bitten. Ease off halfway and it stays half torn, hanging by its last columns. Both ends of the slip carry the zigzag the teeth leave.",
+      },
+      {
+        type: "code",
+        file: "components/crafts/pin-slip/engine.ts",
+        lang: "ts",
+        code: slipTearCode,
+      },
+      {
+        type: "text",
+        heading: "Light on the coating",
+        body: "Thermal paper has a smooth coated face and a dull back, and it's the coating that catches the light as the sheet turns. The light sits above and to the left, placed so that its highlight falls off the paper when the slip hangs flat. So the slip at rest is lit exactly like the printed SVG, and the shine only appears when you bend it: lift the bottom into a loop and the highlight runs across the curve, turn an edge away and it brightens at the grazing angle. The back is plain, matte and slightly grey, with no print showing through. Brightness is measured against the flat pose, so the flat slip shows its true colours, and the paper darkens just under the slot where the printer's lip shades it.",
+      },
+      {
+        type: "code",
+        file: "components/crafts/pin-slip/engine.ts",
+        lang: "glsl",
+        code: slipLightCode,
+        caption: "Excerpt from the fragment shader.",
+      },
+      {
+        type: "text",
+        body: "The shadow is the paper projected along the light onto a wall just behind it, drawn at a quarter of the resolution and blurred, so a corner curling towards you casts a shadow further out and fainter. It's dark enough to hold in both themes.",
+      },
+      {
+        type: "text",
+        heading: "Printing, and letting go",
+        body: "The printer feeds the slip out over 1.6 seconds, in the slightly uneven steps of a stepper motor, and you can't grab it until it stops. Let go of an attached slip and it sways back on the air, with no spring to throw it past its rest. Let go of a torn one and it eases into place with no overshoot: lying a little below the slot, turned two degrees, the way the console draws it. The engine and the painter are about 7 KB gzipped of my own WebGL2, with no library under it, and it's only fetched when this page mounts the slip. It stops drawing when the paper is still or off screen. Arrow keys sway the slip, and Enter tears it off or prints another.",
       },
     ],
   },

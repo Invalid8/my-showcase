@@ -1364,6 +1364,135 @@ a.chip:hover::after {
   gap: 20px;
 }
 
+.slip-demo {
+  --slip-shadow: 0.26;
+  container-type: inline-size;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding-bottom: 22px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+:root[data-theme="dark"] .slip-demo {
+  --slip-shadow: 0.62;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .slip-demo {
+    --slip-shadow: 0.62;
+  }
+}
+
+.slip-stage {
+  --pw: clamp(180px, 62cqi, 272px);
+  --slot: 44px;
+  position: relative;
+  width: 100%;
+  height: calc(var(--slot) + var(--pw) * (var(--ratio) + 0.34));
+}
+
+.site .slip-stage:focus-visible {
+  outline-offset: -4px;
+}
+
+.slip-printer {
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--slot);
+  background: linear-gradient(var(--surface-raised), var(--surface));
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.slip-printer::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  width: calc(var(--pw) + 26px);
+  height: 7px;
+  translate: -50% 0;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(#050505, #1c1c1c);
+  box-shadow: inset 0 2px 3px rgb(0 0 0 / 0.7);
+}
+
+.slip-rest {
+  position: absolute;
+  top: var(--slot);
+  left: 50%;
+  width: var(--pw);
+  aspect-ratio: 1 / var(--ratio);
+  translate: -50% 0;
+  filter: drop-shadow(
+    calc(var(--pw) * 0.0736) calc(var(--pw) * 0.1145) calc(var(--pw) * 0.07)
+      rgb(0 0 0 / calc(var(--slip-shadow) * 0.92))
+  );
+}
+
+.slip-rest svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.slip-demo[data-live] .slip-rest {
+  visibility: hidden;
+}
+
+.slip-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+
+.slip-teeth {
+  position: absolute;
+  top: calc(var(--slot) - 3px);
+  left: 50%;
+  width: calc(var(--pw) + 18px);
+  height: 9px;
+  translate: -50% 0;
+  pointer-events: none;
+  background: linear-gradient(#d9d9d6, #9a9a96 45%, #6f6f6b);
+  mask:
+    linear-gradient(#000 0 0) top / 100% 4px no-repeat,
+    conic-gradient(from -45deg at 50% 100%, #000 90deg, #0000 0) bottom / 7px
+    5px repeat-x;
+  filter: drop-shadow(0 1px 0 rgb(0 0 0 / 0.25));
+}
+
+.slip-action {
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.slip-action:disabled {
+  cursor: default;
+  color: var(--text-faint);
+}
+
+.slip-action span {
+  display: inline-block;
+  animation: slip-roll 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes slip-roll {
+  from {
+    translate: 0 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slip-action span {
+    animation: none;
+  }
+}
+
 .demo-stage {
   position: relative;
   border: 1px solid var(--line);
