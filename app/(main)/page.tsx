@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { HomeAscii } from "@/components/ascii/HomeAscii";
 import { BrandMention } from "@/components/site/BrandMention";
 import { Footer } from "@/components/site/Footer";
@@ -77,8 +78,20 @@ export default async function HomePage() {
       <HomeAscii mottos={mottos} />
       <main id="content" className="column">
         <Section id="intro">
-          <h1 className="name">{person.name}</h1>
-          <p className="role">{person.role}</p>
+          <div className="identity">
+            <Image
+              className="avatar"
+              src="/avatar.jpg"
+              alt=""
+              width={44}
+              height={44}
+              priority
+            />
+            <div>
+              <h1 className="name">{person.name}</h1>
+              <p className="role">{person.role}</p>
+            </div>
+          </div>
           <p className="motto waiting" data-motto />
           <p>{intro}</p>
           <div className="tools" id="tools">

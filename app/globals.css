@@ -375,6 +375,17 @@ body {
   margin-top: 24px;
 }
 
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--line);
+}
+
 .name {
   color: var(--text-primary);
   font-weight: 500;
@@ -419,10 +430,11 @@ body {
   color: var(--text-secondary);
   font-size: 13px;
   margin-left: 4px;
-  display: inline-block;
+  position: relative;
+  left: 0;
   transition:
     color 160ms ease-out,
-    translate 160ms ease-out;
+    left 160ms ease-out;
 }
 
 .link-group:hover .link-arrow {
@@ -430,7 +442,7 @@ body {
 }
 
 .link-group:hover .link-arrow.forward {
-  translate: 2px 0;
+  left: 2px;
 }
 
 .site :focus-visible {

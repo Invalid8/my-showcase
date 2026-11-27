@@ -563,8 +563,11 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "text",
-        body: "It's free, supported by donations, and the address sheet that finds your router has its own four states on",
-        link: { label: "Details", href: "/details" },
+        body: "It's free, supported by donations, and the drawer that asks for your router's address has a page of its own:",
+        link: {
+          label: "A drawer that follows your thumb",
+          href: "/crafts/drawer",
+        },
       },
     ],
   },
