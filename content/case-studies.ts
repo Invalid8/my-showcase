@@ -469,12 +469,13 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "loop",
+        phone: true,
         src: "/work/baseband/action-loop.mp4",
         poster: "/work/baseband/action-loop.jpg",
         label:
-          "The Reboot button: unknown with a dot, tapped, Rebooting… in the same place, then supported without the dot",
+          "Restart on the hub: the confirm drawer says it has never been tried on this model, Restart is tapped and becomes Restarting… in the same place, then the drawer closes",
         caption:
-          "Unknown, tapped, pending in the same place, then supported. Rebuilt in HTML from the design's own values.",
+          "Never tried on this model, so the drawer says so. Tapped, Restarting… in the same place, then done. Simulated: the router wasn't actually restarted.",
       },
       {
         type: "text",
@@ -493,7 +494,7 @@ export const caseStudies: CaseStudy[] = [
         label:
           "A sheet opens to its measured height, springs back from a short drag, then a flick closes it on a timed slide",
         caption:
-          "Opens to its measured height, springs back from a short drag, and a flick closes it on a timed slide. Rebuilt in HTML from the component's own values.",
+          "Opens to its measured height, springs back from a short drag, and a flick closes it on a timed slide.",
       },
       {
         type: "code",
@@ -510,12 +511,13 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         type: "loop",
+        phone: true,
         src: "/work/baseband/morph-loop.mp4",
         poster: "/work/baseband/morph-loop.jpg",
         label:
-          "The Dial box: waiting, a menu with a reply field, a reply sent, waiting again, then the answer",
+          "Dialling *310# through the router: the drawer turns into one box that waits for the network, then grows into the network's answer",
         caption:
-          "Waiting, a menu, a reply sent, then the answer: the box springs to each new size. Rebuilt in HTML from the design, on the app's own spring and fade.",
+          "*310# sent through the router: one box waits for the network, then springs to the size of the answer.",
       },
       {
         type: "code",
